@@ -13,6 +13,7 @@ const SimilarProductSchema = z.object({
   name: z.string(),
   price: z.number(),
   oldPrice: z.number().nullable().optional(),
+  slug: z.string().optional(), // Optional if your API doesn't provide it
   images: z.array(z.string()).optional(),
   image: z.string().optional(),
 });
@@ -60,20 +61,18 @@ export class ProductApi {
 
   /* -------------------------- GET SIMILAR PRODUCTS ------------------------- */
 
-  static async getSimilarProducts(category: string) {
-    try {
-      // 🚨 FIX 1: Destructure { data } from the Axios response
-      const { data } = await apiClient.get("/products", {
-        params: { category },
-      });
+  static async getSimilarProducts(categorySlug: string) {
+  try {
+    const { data } = await apiClient.get(
+      `/products/similar/${categorySlug}`
+    );
 
-      // 🚨 FIX 2: Pass 'data' to Zod, not 'res'
-      const validated = z.array(SimilarProductSchema).parse(data);
+    const validated = z.array(SimilarProductSchema).parse(data);
 
-      return validated;
-    } catch (error) {
-      console.error("Failed to fetch similar products:", error);
-      throw error;
-    }
+    return validated;
+  } catch (error) {
+    console.error("Failed to fetch similar products:", error);
+    throw error;
   }
+}
 }
