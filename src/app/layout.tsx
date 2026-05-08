@@ -13,8 +13,8 @@ import SearchModal from "@/components/layout/SearchModal";
 import { CartDrawer } from "./cart/CartDrawer";
 
 export const metadata: Metadata = {
-  title: "AE Naturals | Nature’s Finest Products",
-  description: "Fresh flowers and cakes delivered same day.",
+ title: "AE Naturals | Nature’s Finest Products",
+description: "Premium natural products crafted for wellness, skincare, haircare, and everyday healthy living.",
   icons: {
     icon: [
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
