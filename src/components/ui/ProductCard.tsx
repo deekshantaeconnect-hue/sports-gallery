@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Star } from "lucide-react";
 import { AddToCartButton } from "@/components/product/AddToCartButton";
+import { cn } from "@/lib/utils";
+
 
 interface ProductCardProps {
   product: {
@@ -51,13 +53,13 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <article
-      className="
-        group relative flex flex-col h-full rounded-2xl border border-neutral-200 
-        bg-white overflow-hidden transition-all duration-300 
-        hover:shadow-lg hover:-translate-y-0.5
-        focus-within:ring-2 focus-within:ring-black/10
-      "
-    >
+  className={cn(
+    "group relative flex flex-col h-full rounded-2xl border border-neutral-200",
+    "bg-white overflow-hidden transition-all duration-300",
+    "hover:shadow-lg hover:-translate-y-0.5",
+    "focus-within:ring-2 focus-within:ring-black/10"
+  )}
+>
       {/* IMAGE SECTION */}
       <Link
         href={`/product/${product.slug}`}

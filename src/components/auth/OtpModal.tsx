@@ -76,9 +76,7 @@ export function OtpModal({
       toast.success("OTP sent successfully!");
     },
     onError: (err: any) =>
-      toast.error(
-        err?.response?.data?.message || "Failed to send OTP"
-      ),
+      toast.error(err?.response?.data?.message || "Failed to send OTP"),
   });
 
   const verifyOtpMutation = useMutation({
@@ -99,9 +97,7 @@ export function OtpModal({
     },
     onError: (err: any) =>
       toast.error(
-        err?.response?.data?.message ||
-          err?.message ||
-          "Invalid OTP"
+        err?.response?.data?.message || err?.message || "Invalid OTP",
       ),
   });
 
@@ -133,9 +129,7 @@ export function OtpModal({
     },
     onError: (err: any) =>
       toast.error(
-        err?.response?.data?.message ||
-          err?.message ||
-          "Invalid OTP"
+        err?.response?.data?.message || err?.message || "Invalid OTP",
       ),
   });
 
@@ -167,7 +161,7 @@ export function OtpModal({
         </button>
 
         <div className="grid min-h-[620px] md:grid-cols-[1.15fr_0.85fr]">
-          {/* LEFT BRAND PANEL */}
+          {/* LEFT BRAND PANEL (DESKTOP) */}
           <div
             className="relative hidden md:flex flex-col justify-center px-14 py-16 text-white"
             style={{
@@ -177,14 +171,14 @@ export function OtpModal({
             {/* Decorative Glow */}
             <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_left,white,transparent_35%)]" />
 
-            {/* Logo */}
-            <div className="relative mb-12">
+            {/* Logo Wrapper - Fixed Dimensions */}
+            <div className="relative mb-12 h-[180px] w-[180px]">
               <Image
                 src={BRAND.logo}
                 alt={BRAND.name}
-                width={180}
-                height={60}
+                fill
                 priority
+                unoptimized
                 className="object-contain"
               />
             </div>
@@ -195,8 +189,8 @@ export function OtpModal({
             </h2>
 
             <p className="mt-5 text-white/80 text-base leading-relaxed max-w-md">
-              Access your account, track orders, save favourites,
-              and enjoy seamless shopping with {BRAND.name}.
+              Access your account, track orders, save favourites, and enjoy
+              seamless shopping with {BRAND.name}.
             </p>
 
             {/* Footer info */}
@@ -209,13 +203,14 @@ export function OtpModal({
           {/* RIGHT FORM PANEL */}
           <div className="flex items-center justify-center bg-white px-6 py-10 sm:px-10">
             <div className="w-full max-w-sm">
-              {/* Mobile logo */}
-              <div className="mb-8 flex justify-center md:hidden">
+              {/* Mobile logo Wrapper - Fixed Dimensions */}
+              <div className="relative mb-8 mx-auto h-[48px] w-[140px] md:hidden">
                 <Image
                   src={BRAND.logo}
                   alt={BRAND.name}
-                  width={140}
-                  height={48}
+                  fill
+                  unoptimized
+                  className="object-contain"
                 />
               </div>
 
@@ -246,20 +241,14 @@ export function OtpModal({
                     <input
                       type="text"
                       value={identifier}
-                      onChange={(e) =>
-                        setIdentifier(e.target.value)
-                      }
+                      onChange={(e) => setIdentifier(e.target.value)}
                       placeholder="Email or Phone Number"
                       className="h-14 w-full rounded-xl border border-gray-200 px-5 outline-none transition focus:border-transparent focus:ring-2"
                     />
 
                     <Button
-                      onClick={() =>
-                        sendOtpMutation.mutate(identifier)
-                      }
-                      disabled={
-                        !identifier || sendOtpMutation.isPending
-                      }
+                      onClick={() => sendOtpMutation.mutate(identifier)}
+                      disabled={!identifier || sendOtpMutation.isPending}
                       className="h-14 w-full rounded-xl text-base font-bold"
                       style={{
                         backgroundColor: BRAND.theme.primary,
@@ -287,13 +276,8 @@ export function OtpModal({
                     />
 
                     <Button
-                      onClick={() =>
-                        verifyOtpMutation.mutate(otp)
-                      }
-                      disabled={
-                        otp.length < 6 ||
-                        verifyOtpMutation.isPending
-                      }
+                      onClick={() => verifyOtpMutation.mutate(otp)}
+                      disabled={otp.length < 6 || verifyOtpMutation.isPending}
                       className="h-14 w-full rounded-xl text-base font-bold"
                       style={{
                         backgroundColor: BRAND.theme.primary,
@@ -332,9 +316,7 @@ export function OtpModal({
                         maxLength={10}
                         value={newPhone}
                         onChange={(e) =>
-                          setNewPhone(
-                            e.target.value.replace(/\D/g, "")
-                          )
+                          setNewPhone(e.target.value.replace(/\D/g, ""))
                         }
                         placeholder="Mobile Number"
                         className="h-14 w-full rounded-xl border border-gray-200 pl-16 pr-5 outline-none"
@@ -342,12 +324,9 @@ export function OtpModal({
                     </div>
 
                     <Button
-                      onClick={() =>
-                        sendPhoneOtpMutation.mutate(newPhone)
-                      }
+                      onClick={() => sendPhoneOtpMutation.mutate(newPhone)}
                       disabled={
-                        newPhone.length !== 10 ||
-                        sendPhoneOtpMutation.isPending
+                        newPhone.length !== 10 || sendPhoneOtpMutation.isPending
                       }
                       className="h-14 w-full rounded-xl text-base font-bold"
                       style={{
@@ -370,20 +349,15 @@ export function OtpModal({
                       type="text"
                       maxLength={6}
                       value={phoneOtp}
-                      onChange={(e) =>
-                        setPhoneOtp(e.target.value)
-                      }
+                      onChange={(e) => setPhoneOtp(e.target.value)}
                       placeholder="Enter Mobile OTP"
                       className="h-14 w-full rounded-xl border border-gray-200 px-5 text-center text-2xl font-black tracking-[0.25em]"
                     />
 
                     <Button
-                      onClick={() =>
-                        verifyPhoneOtpMutation.mutate(phoneOtp)
-                      }
+                      onClick={() => verifyPhoneOtpMutation.mutate(phoneOtp)}
                       disabled={
-                        phoneOtp.length < 6 ||
-                        verifyPhoneOtpMutation.isPending
+                        phoneOtp.length < 6 || verifyPhoneOtpMutation.isPending
                       }
                       className="h-14 w-full rounded-xl text-base font-bold"
                       style={{
@@ -413,8 +387,7 @@ export function OtpModal({
 
               {/* Footer */}
               <p className="mt-8 text-center text-xs leading-relaxed text-gray-400">
-                By continuing, you agree to our Privacy Policy
-                and Terms.
+                By continuing, you agree to our Privacy Policy and Terms.
               </p>
             </div>
           </div>

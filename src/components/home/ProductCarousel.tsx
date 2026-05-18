@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 
 import ProductCard from "../ui/ProductCard";
+import { cn } from "@/lib/utils";
 
 interface ProductCarouselProps {
   data: any[];
@@ -178,7 +179,7 @@ export const ProductCarousel: React.FC<
 
   return (
     <section
-      className={`w-full ${SECTION_SPACING}`}
+      className={cn("w-full", SECTION_SPACING)}
       aria-labelledby="product-carousel-heading"
     >
       <div className={CONTAINER_SPACING}>
