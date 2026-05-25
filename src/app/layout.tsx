@@ -77,9 +77,11 @@ export default function RootLayout({
               <SearchModal />
               <CartDrawer />
 
-              {/* Header */}
-              <Header megaMenu={<MegaMenu />} />
+             {/* 🔥 FIX: Mobile drawer sits at the absolute root. It will NEVER be trapped by header CSS again. */}
+              <MegaMenu variant="mobile" />
 
+              {/* 🔥 FIX: Header ONLY receives the desktop variant. */}
+              <Header megaMenu={<MegaMenu variant="desktop" />} />
               {/* Main Content */}
               <main className="flex flex-1 flex-col w-full">
                 <Toaster position="top-center" richColors />
