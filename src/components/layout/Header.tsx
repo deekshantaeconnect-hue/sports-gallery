@@ -173,7 +173,7 @@ export function Header({ megaMenu }: HeaderProps) {
           </div>
 
           {/* CENTER: Mega Menu */}
-          <div className="flex-1 lg:flex-[1_1_60%] flex justify-center items-center h-full w-0 lg:w-auto">
+          <div className="flex-1 lg:flex-[1_1_60%] flex justify-start items-center h-full w-0 lg:w-auto">
             {megaMenu}
           </div>
 

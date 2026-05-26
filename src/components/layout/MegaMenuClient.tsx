@@ -10,11 +10,13 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function MegaMenuClient({ groups }: { groups: any[] }) {
   const [activeGroup, setActiveGroup] = useState<string | null>(null);
-const capitalize = (str: string) =>
-  str.charAt(0).toUpperCase() + str.slice(1);
+  const capitalize = (str: string) =>
+    str.charAt(0).toUpperCase() + str.slice(1);
+
   return (
     <nav
-      className="relative flex items-center gap-6 xl:gap-8 h-full"
+      /* 🔥 FIX: Added 'hidden lg:flex' so it safely vanishes on mobile screens */
+      className="hidden lg:flex relative items-center gap-6 xl:gap-8 h-full"
       aria-label="Main navigation"
       onMouseLeave={() => setActiveGroup(null)}
     >
@@ -26,7 +28,7 @@ const capitalize = (str: string) =>
           <div
             key={group.id}
             // 🔥 Restored 'relative' here so the dropdown aligns to this specific word
-            className="relative h-full flex items-center group/nav"
+            className="relative h-full flex items-start group/nav"
             onMouseEnter={() => !isLink && setActiveGroup(group.id)}
           >
             {/* DIRECT LINK */}

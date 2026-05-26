@@ -35,7 +35,6 @@ const BgShell: React.FC<{
       compact ? "p-8 md:p-12" : "p-5 sm:p-7 lg:p-10"
     }`}
     style={{
-      /* Rich multi-stop background */
       background: `
         radial-gradient(ellipse 80% 60% at 10% -10%, ${primary}22 0%, transparent 60%),
         radial-gradient(ellipse 60% 50% at 90% 110%, ${secondary}1e 0%, transparent 55%),
@@ -56,7 +55,7 @@ const BgShell: React.FC<{
       `,
     }}
   >
-    {/* ── Floating ambient orbs ── */}
+    {/* Floating ambient orbs */}
     <div
       className="pointer-events-none absolute -top-32 -right-16 h-[500px] w-[500px] rounded-full"
       style={{
@@ -79,7 +78,7 @@ const BgShell: React.FC<{
       }}
     />
 
-    {/* ── Fine grain texture overlay ── */}
+    {/* Fine grain texture overlay */}
     <div
       className="pointer-events-none absolute inset-0 rounded-[44px] opacity-[0.018]"
       style={{
@@ -88,7 +87,7 @@ const BgShell: React.FC<{
       }}
     />
 
-    {/* ── Subtle grid lines ── */}
+    {/* Subtle grid lines */}
     <div
       className="pointer-events-none absolute inset-0 rounded-[44px]"
       style={{
@@ -100,12 +99,8 @@ const BgShell: React.FC<{
       }}
     />
 
-    {/* ── Top gloss edge ── */}
     <div className="pointer-events-none absolute inset-x-0 top-0 h-32 rounded-t-[44px] bg-gradient-to-b from-white/60 to-transparent" />
-
-    {/* ── Bottom vignette ── */}
     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 rounded-b-[44px] bg-gradient-to-t from-black/[0.02] to-transparent" />
-
     <div className="relative z-10">{children}</div>
   </div>
 );
@@ -152,7 +147,6 @@ export const CollectionsShowcase: React.FC<CollectionsShowcaseProps> = ({
   const primary = BRAND.theme.primary;
   const secondary = BRAND.theme.secondary;
 
-  /* ── No collection selected ── */
   if (!settings?.collectionId) {
     return (
       <section className={`w-full ${SECTION_SPACING}`}>
@@ -172,7 +166,6 @@ export const CollectionsShowcase: React.FC<CollectionsShowcaseProps> = ({
     );
   }
 
-  /* ── Collection exists but no products ── */
   if (!collection || !collection.products || collection.products.length === 0) {
     return (
       <section className={`w-full ${SECTION_SPACING}`}>
@@ -192,7 +185,6 @@ export const CollectionsShowcase: React.FC<CollectionsShowcaseProps> = ({
             )}
 
             <div className="mx-auto flex max-w-xl flex-col items-center text-center">
-              {/* Icon card */}
               <div
                 className="flex h-24 w-24 items-center justify-center rounded-[28px]"
                 style={{
@@ -236,7 +228,6 @@ export const CollectionsShowcase: React.FC<CollectionsShowcaseProps> = ({
     );
   }
 
-  /* ── Success: render products ── */
   const rawProducts = collection.products;
   const productsToRender = rawProducts
     .map((p: any) => (p.product ? p.product : p))
@@ -250,7 +241,6 @@ export const CollectionsShowcase: React.FC<CollectionsShowcaseProps> = ({
           {title && (
             <div className="mb-10 md:mb-14">
               <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-                {/* LEFT side */}
                 <div className="max-w-2xl space-y-5">
                   <BadgePill
                     primary={primary}
@@ -263,7 +253,6 @@ export const CollectionsShowcase: React.FC<CollectionsShowcaseProps> = ({
                       {title}
                     </h2>
 
-                    {/* Animated accent bar */}
                     <div className="flex items-center gap-2">
                       <div
                         className="h-1 w-16 rounded-full"
@@ -289,7 +278,6 @@ export const CollectionsShowcase: React.FC<CollectionsShowcaseProps> = ({
                   </div>
                 </div>
 
-                {/* RIGHT: desktop CTA */}
                 {rawProducts.length > 4 && (
                   <Link
                     href={`/collections/${collection.slug || collection.id}`}
@@ -319,14 +307,14 @@ export const CollectionsShowcase: React.FC<CollectionsShowcaseProps> = ({
           )}
 
           {/* ═══════════════ PRODUCT GRID ═══════════════ */}
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4 lg:gap-6">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4 lg:gap-6 items-stretch">
             {productsToRender.map((product: any, i: number) => (
               <div
                 key={product.id}
-                className="group relative transition-all duration-300 hover:-translate-y-1.5"
+                // 🔥 ADDED `flex flex-col h-full` to outer wrapper
+                className="group relative flex flex-col h-full transition-all duration-300 hover:-translate-y-1.5"
                 style={{ transitionDelay: `${i * 30}ms` }}
               >
-                {/* Per-card glow on hover */}
                 <div
                   className="pointer-events-none absolute -inset-1 rounded-[32px] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                   style={{
@@ -335,9 +323,9 @@ export const CollectionsShowcase: React.FC<CollectionsShowcaseProps> = ({
                   }}
                 />
 
-                {/* Card surface lift */}
                 <div
-                  className="relative transition-shadow duration-300"
+                  // 🔥 ADDED `flex flex-col flex-1 h-full` to inner wrapper
+                  className="relative flex flex-col flex-1 h-full transition-shadow duration-300"
                   style={{
                     filter: `drop-shadow(0 2px 8px rgba(0,0,0,0.04))`,
                   }}
