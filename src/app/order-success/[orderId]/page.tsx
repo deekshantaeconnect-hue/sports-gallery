@@ -242,7 +242,7 @@ export default function OrderSuccessPage({
             </Link>
 
             <Link
-              href="/orders"
+              href="/profile?tab=orders"
               className="w-full py-3.5 px-4 border border-gray-200 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors"
             >
               View Orders
@@ -300,7 +300,7 @@ export default function OrderSuccessPage({
             </button>
 
             <Link
-              href="/orders"
+              href="/profile?tab=orders"
               className="w-full py-3.5 px-4 border border-gray-200 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors"
             >
               Go to Orders
@@ -422,7 +422,7 @@ export default function OrderSuccessPage({
         ========================================================= */}
         <div className="mt-8 flex flex-col gap-3">
           <Link
-            href="/orders"
+            href="/profile?tab=orders"
             className="flex items-center justify-center w-full py-4 px-4 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-all duration-200"
           >
             View My Orders
