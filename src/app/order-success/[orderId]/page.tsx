@@ -16,6 +16,7 @@ import { useWindowSize } from "react-use";
 
 import { apiClient } from "@/lib/api-client";
 import { useCartStore } from "@/store/useCartStore";
+import { normalizeMediaCollection } from "@/utils/media-normalization";
 
 interface OrderItem {
   name: string;
@@ -363,46 +364,53 @@ export default function OrderSuccessPage({
 
           <div className="space-y-4">
             {order?.items?.map((item, index) => {
-              console.log("Order Item Image:", item.image);
-              return (
-                <div
-                  key={index}
-                  className="flex items-center justify-between pb-4 border-b border-gray-100 last:border-0 last:pb-0"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 bg-white rounded-xl border border-gray-200 flex-shrink-0 relative overflow-hidden">
-                      {item.image ? (
-                        <Image
-                          src={item.image}
-                          alt={item.name}
-                          fill
-                          className="object-cover"
-                          sizes="56px"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gray-100" />
-                      )}
-                    </div>
+  const normalizedMedia = normalizeMediaCollection(
+    Array.isArray(item.image) ? item.image : [item.image]
+  );
 
-                    <div className="flex flex-col text-left">
-                      <span className="font-semibold text-gray-900 text-sm">
-                        {item.name}
-                      </span>
+  const firstImage = normalizedMedia.find(
+    (media) => media.type === "image" || media.type === "gif"
+  );
 
-                      {item.description && (
-                        <span className="text-xs text-gray-500 mt-0.5 line-clamp-1">
-                          {item.description}
-                        </span>
-                      )}
-                    </div>
-                  </div>
+  return (
+    <div
+      key={index}
+      className="flex items-center justify-between pb-4 border-b border-gray-100 last:border-0 last:pb-0"
+    >
+      <div className="flex items-center gap-4">
+        <div className="w-14 h-14 bg-white rounded-xl border border-gray-200 flex-shrink-0 relative overflow-hidden">
+          {firstImage?.url ? (
+            <Image
+              src={firstImage.url}
+              alt={item.name}
+              fill
+              className="object-cover"
+              sizes="56px"
+            />
+          ) : (
+            <div className="w-full h-full bg-gray-100" />
+          )}
+        </div>
 
-                  <span className="font-semibold text-gray-900 text-sm">
-                    ₹{item.price.toLocaleString("en-IN")}
-                  </span>
-                </div>
-              );
-            })}
+        <div className="flex flex-col text-left">
+          <span className="font-semibold text-gray-900 text-sm">
+            {item.name}
+          </span>
+
+          {item.description && (
+            <span className="text-xs text-gray-500 mt-0.5 line-clamp-1">
+              {item.description}
+            </span>
+          )}
+        </div>
+      </div>
+
+      <span className="font-semibold text-gray-900 text-sm">
+        ₹{item.price.toLocaleString("en-IN")}
+      </span>
+    </div>
+  );
+})}
           </div>
 
           {/* =========================================================
