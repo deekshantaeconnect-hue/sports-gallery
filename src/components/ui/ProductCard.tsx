@@ -99,7 +99,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       {/* IMAGE / VIDEO HOVER SECTION */}
       <Link
         href={`/product/${product.slug}`}
-        className="relative block aspect-[4/5] bg-neutral-100 overflow-hidden"
+        className="relative block aspect-square bg-neutral-100 overflow-hidden"
         aria-label={product.name}
         onMouseEnter={() => {
           setIsHovered(true);
