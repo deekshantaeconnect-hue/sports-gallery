@@ -4,6 +4,8 @@ import { useState } from "react";
 import { ShoppingCart, Zap, Loader2 } from "lucide-react"; // Imported Loader2
 import FeatureHighlights from "@/components/ui/FeatureHighlights";
 import { useCartStore } from "@/store/useCartStore"; // 1. Import Zustand store
+import { AddToCartButton } from "./AddToCartButton";
+import StickyAddToCart from "./StickyAddToCart";
 
 export default function ProductInfo({ product }: { product: any }) {
   const [quantity, setQuantity] = useState(1);
@@ -14,7 +16,6 @@ export default function ProductInfo({ product }: { product: any }) {
     product.variants?.length > 0 ? product.variants[0] : null,
   );
 
-  
   const addItem = useCartStore((s) => s.addItem);
 
   const renderStars = (rating: number) => {
@@ -52,7 +53,7 @@ export default function ProductInfo({ product }: { product: any }) {
         price: activePrice, // 🔥 FIX: Passed resolved activePrice instead of undefined product.price
         image: product.images?.[0] || "",
         quantity: quantity,
-         isCodEnabled: product.isCodEnabled,
+        isCodEnabled: product.isCodEnabled,
       });
     } finally {
       setIsAdding(false);
@@ -60,7 +61,7 @@ export default function ProductInfo({ product }: { product: any }) {
   };
 
   // STRICT BACKWARD COMPATIBILITY RULE ON FRONTEND
- const activePrice = selectedVariant?.price ?? 0;
+  const activePrice = selectedVariant?.price ?? 0;
   const activeOldPrice = selectedVariant?.oldPrice ?? 0;
 
   const discount =
@@ -128,41 +129,23 @@ export default function ProductInfo({ product }: { product: any }) {
 
       {/* Buy Actions */}
       <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-4">
-        <div className="flex items-center space-x-4">
-          <label htmlFor="qty" className="text-sm font-medium text-gray-700">
-            Quantity:
-          </label>
-          <select
-            id="qty"
-            value={quantity}
-            onChange={(e) => setQuantity(Number(e.target.value))}
-            className="border-gray-300 rounded-md shadow-sm focus:border-orange-500 focus:ring-orange-500 text-sm py-1.5 pl-3 pr-8 bg-white border cursor-pointer"
-          >
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex flex-col space-y-3">
-          {/* 5. Wired Button with Loading State */}
-          <button
-            onClick={handleAddToCart}
-            disabled={
-              isAdding || (product.variants?.length > 0 && !selectedVariant)
-            }
-            className="w-full flex justify-center items-center space-x-2 bg-[#006044] hover:bg-[#004d36] text-white font-medium py-3 px-6 rounded-full shadow-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {isAdding ? (
-              <Loader2 className="animate-spin" size={18} />
-            ) : (
-              <ShoppingCart size={18} />
-            )}
-            <span>{isAdding ? "Adding to Cart..." : "Add to Cart"}</span>
-          </button>
+        <div id="main-add-to-cart">
+          <AddToCartButton
+            product={{
+              id: product.id,
+              name: product.name,
+              price: activePrice,
+              images: product.images,
+              variants: product.variants,
+              stock: selectedVariant?.stock || 0,
+              isCodEnabled: product.isCodEnabled,
+            }}
+            variantId={selectedVariant?.id}
+            stock={selectedVariant?.stock || 0}
+          />
         </div>
       </div>
+      <StickyAddToCart product={product} selectedVariant={selectedVariant} />
     </div>
   );
 }

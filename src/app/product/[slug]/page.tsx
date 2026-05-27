@@ -97,7 +97,7 @@ export default async function ProductPage({
       </main>
 
       {/* MOBILE STICKY ADD TO CART */}
-      <StickyAddToCart product={product as any} />
+      {/* <StickyAddToCart product={product as any} /> */}
     </div>
   );
 }
