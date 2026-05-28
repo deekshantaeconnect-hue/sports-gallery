@@ -11,6 +11,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
   // 🚨 2. Await the params to extract the actual slug string
   const { slug } = await params;
   
+  
   const headersList = await headers();
   const domain = headersList.get("x-forwarded-host") || headersList.get("host") || "localhost";
   
