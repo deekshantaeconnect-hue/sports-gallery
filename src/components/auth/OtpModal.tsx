@@ -483,11 +483,11 @@ console.log("Phone OTP verification successful:", data);
                 fill
                 priority
                 unoptimized
-                className="object-contain"
+                className="object-contain bg-white rounded-full p-4"
               />
             </div>
 
-            <h2 className="max-w-md text-4xl font-black leading-tight">
+            <h2 className="max-w-md text-4xl font-black text-white/80 leading-tight">
               Login now to unlock exclusive offers
             </h2>
 
