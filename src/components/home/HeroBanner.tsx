@@ -9,16 +9,22 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { cn } from "@/lib/utils";
 
+interface HeroBannerItem {
+  imageUrl?: string;
+  desktopImageUrl?: string;
+  tabletImageUrl?: string;
+  mobileImageUrl?: string;
+  link?: string;
+  collectionId?: string;
+  title?: string;
+  subtitle?: string;
+  ctaText?: string;
+}
+
 interface HeroBannerProps {
   data?: any[];
   settings?: {
-    banners?: {
-      imageUrl: string;
-      link?: string;
-      title?: string;
-      subtitle?: string;
-      ctaText?: string;
-    }[];
+    banners?: HeroBannerItem[];
   };
 }
 
@@ -34,19 +40,84 @@ export const HeroBanner = ({ data = [], settings }: HeroBannerProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [direction, setDirection] = useState(0);
+  const [screenWidth, setScreenWidth] = useState(1920);
+
+  useEffect(() => {
+    const updateWidth = () => {
+      setScreenWidth(window.innerWidth);
+    };
+
+    updateWidth();
+
+    window.addEventListener("resize", updateWidth);
+
+    return () => {
+      window.removeEventListener("resize", updateWidth);
+    };
+  }, []);
 
   const banners = useMemo(() => {
-    const rawBanners = settings?.banners?.length ? settings.banners : data;
-    return rawBanners
-      .map((banner: any) => ({
-        imageUrl: banner.imageUrl || banner.content?.imageUrl || "",
-        link: banner.link || banner.content?.link || "#",
-        title: banner.title || banner.content?.title || "",
-        subtitle: banner.subtitle || banner.content?.subtitle || "",
-        ctaText: banner.ctaText || banner.content?.ctaText || "Shop Collection",
-      }))
-      .filter((banner: any) => Boolean(banner.imageUrl));
-  }, [data, settings]);
+    const source =
+      settings?.banners?.length && settings.banners.length > 0
+        ? settings.banners
+        : data;
+
+    return source
+      .map((banner: any) => {
+        let imageUrl =
+          banner?.imageUrl ||
+          banner?.content?.imageUrl ||
+          banner?.content?.image ||
+          "";
+
+        if (screenWidth < 768) {
+          imageUrl =
+            banner?.mobileImageUrl ||
+            banner?.content?.mobileImageUrl ||
+            imageUrl;
+        } else if (screenWidth < 1024) {
+          imageUrl =
+            banner?.tabletImageUrl ||
+            banner?.content?.tabletImageUrl ||
+            imageUrl;
+        } else {
+          imageUrl =
+            banner?.desktopImageUrl ||
+            banner?.content?.desktopImageUrl ||
+            imageUrl;
+        }
+
+        return {
+          imageUrl,
+
+          desktopImageUrl:
+            banner?.desktopImageUrl || banner?.content?.desktopImageUrl || "",
+
+          tabletImageUrl:
+            banner?.tabletImageUrl || banner?.content?.tabletImageUrl || "",
+
+          mobileImageUrl:
+            banner?.mobileImageUrl || banner?.content?.mobileImageUrl || "",
+
+          link:
+            banner?.link ||
+            banner?.content?.link ||
+            banner?.content?.url ||
+            "#",
+
+          collectionId:
+            banner?.collectionId || banner?.content?.collectionId || "",
+
+          title: banner?.title || banner?.content?.title || "",
+
+          subtitle: banner?.subtitle || banner?.content?.subtitle || "",
+
+          ctaText:
+            banner?.ctaText || banner?.content?.ctaText || "Shop Collection",
+        };
+      })
+      .filter((banner) => !!banner.imageUrl);
+  }, [data, settings, screenWidth]);
 
   const totalSlides = banners.length;
 
@@ -79,15 +150,33 @@ export const HeroBanner = ({ data = [], settings }: HeroBannerProps) => {
 
   return (
     // 🔥 FIX: Added z-0 to ensure it establishes a base stacking context strictly below the header
-    <section 
+    <section
       className="relative z-0 w-full bg-white pt-0 pb-8 md:pb-12"
       aria-roledescription="carousel"
       aria-label="Promotional Offers"
     >
       <div className="mx-auto px-3 sm:px-3 md:px-4">
-        
-        <div 
-          className="relative w-full h-[55vh] md:h-[65vh] lg:h-[85vh] min-h-[400px] rounded-[24px] md:rounded-[22px] overflow-hidden bg-neutral-900 shadow-sm touch-pan-y"
+        <div
+          className={cn(
+  "relative",
+  "w-full",
+
+  // Mobile 768x1024
+  "aspect-[3/4]",
+
+  // Tablet 1200x900
+  "md:aspect-[4/3]",
+
+  // Desktop 1920x800
+  "lg:aspect-[12/5]",
+
+  "overflow-hidden",
+  "rounded-[24px]",
+  "md:rounded-[22px]",
+  "bg-neutral-900",
+  "shadow-sm",
+  "touch-pan-y"
+)}
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
           onTouchStart={() => setIsPaused(true)}
@@ -108,22 +197,26 @@ export const HeroBanner = ({ data = [], settings }: HeroBannerProps) => {
               className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing"
             >
               <Image
-                src={banners[currentIndex].imageUrl}
-                alt={banners[currentIndex].title || `Hero Banner Slide ${currentIndex + 1}`}
+                src={banners[currentIndex]?.imageUrl || ""}
+                alt={
+                  banners[currentIndex].title ||
+                  `Hero Banner Slide ${currentIndex + 1}`
+                }
                 fill
-                priority // Always prioritize the active slide for LCP performance
-                className="object-cover object-center select-none"
-                sizes="(max-width: 1600px) 100vw, 1600px"
+                priority
+                className="object-contain object-center select-none"
+                sizes="100vw"
                 quality={90}
                 draggable={false}
               />
 
-              {(banners[currentIndex].title || banners[currentIndex].subtitle) && (
+              {(banners[currentIndex].title ||
+                banners[currentIndex].subtitle) && (
                 <>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent md:bg-gradient-to-r md:from-black/60 md:via-black/10 md:to-transparent pointer-events-none" />
                   <div className="absolute inset-0 flex items-center pointer-events-none">
                     <div className="px-8 md:px-16 lg:px-24 w-full">
-                      <motion.div 
+                      <motion.div
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.2, duration: 0.8 }}
@@ -189,10 +282,12 @@ export const HeroBanner = ({ data = [], settings }: HeroBannerProps) => {
                     aria-label={`Go to slide ${index + 1}`}
                     className="group relative h-1.5 w-8 md:w-12 bg-white/30 rounded-full overflow-hidden"
                   >
-                    <div 
+                    <div
                       className={cn(
                         "absolute inset-0 bg-white rounded-full transition-transform duration-500",
-                        currentIndex === index ? "translate-x-0" : "-translate-x-full"
+                        currentIndex === index
+                          ? "translate-x-0"
+                          : "-translate-x-full",
                       )}
                     />
                   </button>
