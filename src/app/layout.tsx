@@ -12,6 +12,7 @@ import SearchModal from "@/components/layout/SearchModal";
 
 import QueryProvider from "@/components/providers/QueryProvider";
 import { AuthProvider } from "@/components/providers/AuthProvider";
+import ScrollToTopOnRouteChange from "@/components/layout/ScrollToTopOnRouteChange";
 
 import { CartDrawer } from "./cart/CartDrawer";
 
@@ -70,6 +71,7 @@ export default function RootLayout({
           ["--accent" as string]: BRAND.theme.accent,
         }}
       >
+        <ScrollToTopOnRouteChange />
         <QueryProvider>
           <AuthProvider>
             <div className="flex min-h-screen flex-col">
