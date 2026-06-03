@@ -7,13 +7,14 @@ export const ThemeSectionSchema = z.object({
   type: z.enum([
     "HERO",
     "TRUST_BADGES",
-    "COLLECTIONS",       // 🚨 Renamed from CATEGORIES
+    "COLLECTIONS", // 🚨 Renamed from CATEGORIES
     "PRODUCT_CAROUSEL",
     "FEATURED_PRODUCTS", // 🚨 Added
     "PROMO_BANNER",
     "BRAND_STORY",
     "BLOG_SECTION",
-    "VIDEO_SHOPPABLE",   // 🚨 Added
+    "VIDEO_SHOPPABLE", // 🚨 Added
+    "WHATSAPP_WIDGET",
   ]),
   isActive: z.boolean().default(true),
   settings: z.record(z.string(), z.any()).default({}), // Can be strictly typed per block later
