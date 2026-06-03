@@ -365,16 +365,15 @@ export default function CheckoutClient() {
     e.preventDefault();
 
     const isPhoneValid = /^[6-9]\d{9}$/.test(newAddress.phone);
-
     const isPincodeValid = /^[1-9][0-9]{5}$/.test(newAddress.pincode);
 
     if (!isPhoneValid) {
-      toast.error("Invalid mobile number");
+      toast.error("Invalid mobile number (must start with 6-9)");
       return;
     }
 
     if (!isPincodeValid) {
-      toast.error("Please enter valid pincode");
+      toast.error("Please enter a valid 6-digit Pincode");
       return;
     }
 
@@ -386,18 +385,14 @@ export default function CheckoutClient() {
       });
 
       setAddresses([...addresses, added]);
-
       setSelectedAddress(added);
-
       setShowAddAddressForm(false);
-
       toast.success("Address saved!");
     } catch (error: any) {
       const msg =
         error?.response?.data?.message?.[0] ||
         error?.response?.data?.message ||
         "Failed to add address";
-
       toast.error(msg);
     }
   };
@@ -543,18 +538,16 @@ export default function CheckoutClient() {
               <div
                 key={addr.id}
                 onClick={() => setSelectedAddress(addr)}
-                className={`p-4 border rounded-2xl cursor-pointer transition-all ${
+                className={`p-4 border rounded-xl cursor-pointer transition-colors ${
                   selectedAddress?.id === addr.id
                     ? "border-[#217A6E] bg-[#217A6E]/5"
                     : "border-gray-200 hover:border-gray-300"
                 }`}
               >
                 <div className="font-semibold">{addr.name}</div>
-
                 <div className="text-sm text-gray-600">
                   {addr.addressLine}, {addr.city}
                 </div>
-
                 <div className="text-sm text-gray-600">
                   {addr.state} - {addr.pincode}
                 </div>
@@ -563,7 +556,7 @@ export default function CheckoutClient() {
 
             <Button
               variant="outline"
-              className="w-full border-dashed"
+              className="w-full mt-4 border-dashed"
               onClick={() => setShowAddAddressForm(true)}
             >
               + Add New Address
@@ -572,49 +565,127 @@ export default function CheckoutClient() {
         ) : (
           <form
             onSubmit={handleAddAddress}
-            className="space-y-4 bg-white border rounded-2xl p-5"
+            className="space-y-5 bg-white p-5 sm:p-6 rounded-2xl border border-gray-200 shadow-sm w-full overflow-hidden"
           >
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <input
+                className="p-2 border rounded-md w-full"
+                placeholder="First Name"
+                required
+                onChange={(e) =>
+                  setNewAddress({ ...newAddress, firstName: e.target.value })
+                }
+              />
+              <input
+                className="p-2 border rounded-md w-full"
+                placeholder="Last Name"
+                required
+                onChange={(e) =>
+                  setNewAddress({ ...newAddress, lastName: e.target.value })
+                }
+              />
+            </div>
             <input
-              className="w-full border rounded-xl p-3"
-              placeholder="First Name"
+              className="p-2 border rounded-md w-full"
+              placeholder="Email"
+              type="email"
+              required
               onChange={(e) =>
-                setNewAddress({
-                  ...newAddress,
-                  firstName: e.target.value,
-                })
+                setNewAddress({ ...newAddress, email: e.target.value })
               }
             />
+            <div className="relative">
+              <input
+                className={`p-2 border rounded-md w-full focus:ring-2 focus:ring-[#217A6E] transition-all ${
+                  newAddress.phone && !/^[6-9]\d{9}$/.test(newAddress.phone)
+                    ? "border-red-500"
+                    : "border-gray-300"
+                }`}
+                placeholder="10-digit Phone Number"
+                type="tel"
+                maxLength={10}
+                required
+                value={newAddress.phone}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "");
+                  setNewAddress({ ...newAddress, phone: val });
+                }}
+              />
+              {newAddress.phone && !/^[6-9]\d{9}$/.test(newAddress.phone) && (
+                <p className="text-[10px] text-red-500 mt-1">
+                  Must be 10 digits starting with 6-9
+                </p>
+              )}
+            </div>
 
             <input
-              className="w-full border rounded-xl p-3"
-              placeholder="Phone"
-              value={newAddress.phone}
+              className="p-2 border rounded-md w-full"
+              placeholder="Address Line"
+              required
               onChange={(e) =>
-                setNewAddress({
-                  ...newAddress,
-                  phone: e.target.value,
-                })
+                setNewAddress({ ...newAddress, addressLine: e.target.value })
               }
             />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <input
+                className="p-2 border rounded-md w-full"
+                placeholder="City"
+                required
+                onChange={(e) =>
+                  setNewAddress({ ...newAddress, city: e.target.value })
+                }
+              />
+              <input
+                className="p-2 border rounded-md w-full"
+                placeholder="State"
+                required
+                onChange={(e) =>
+                  setNewAddress({ ...newAddress, state: e.target.value })
+                }
+              />
+            </div>
 
-            <input
-              className="w-full border rounded-xl p-3"
-              placeholder="Address"
-              onChange={(e) =>
-                setNewAddress({
-                  ...newAddress,
-                  addressLine: e.target.value,
-                })
-              }
-            />
+            <div className="relative">
+              <input
+                type="text"
+                className="p-2 border rounded-md w-full focus:ring-2 focus:ring-[#217A6E]"
+                placeholder="6-digit Pincode"
+                maxLength={6}
+                required
+                value={newAddress.pincode}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "");
+                  setNewAddress({ ...newAddress, pincode: val });
+                }}
+              />
+              {newAddress.pincode &&
+                !/^[1-9][0-9]{5}$/.test(newAddress.pincode) && (
+                  <p className="text-[10px] text-red-500 mt-1">
+                    Enter valid 6-digit Pincode
+                  </p>
+                )}
+            </div>
 
-            <Button className="w-full bg-[#217A6E] hover:bg-[#004d36]">
-              Save Address
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3 pt-2 w-full">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full sm:flex-1 h-11 rounded-xl border-gray-300"
+                onClick={() => setShowAddAddressForm(false)}
+              >
+                Cancel
+              </Button>
+
+              <Button
+                type="submit"
+                className="w-full sm:flex-1 h-11 rounded-xl bg-[#217A6E] hover:bg-[#004d36] text-white"
+              >
+                Save Address
+              </Button>
+            </div>
           </form>
         )}
       </div>
-
       {/* RIGHT */}
 
       <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm sticky top-24">
