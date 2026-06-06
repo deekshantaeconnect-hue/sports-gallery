@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useRef, useMemo } from "react";
+import React, { useEffect, useRef, useMemo, useState } from "react";
 import Link from "next/link";
-import { Play, ShoppingBag } from "lucide-react";
+import { Play, ShoppingBag, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface VideoShoppableProps {
@@ -18,9 +18,7 @@ const CONTAINER_SPACING = "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8";
  */
 const isValidImageUrl = (url?: string) => {
   if (!url || typeof url !== "string") return false;
-
   if (url.startsWith("/")) return true;
-
   try {
     new URL(url);
     return true;
@@ -33,19 +31,66 @@ export const VideoShoppableSection: React.FC<VideoShoppableProps> = ({
   data,
   settings,
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   const title = settings?.title || "Quick Tutorials for Best Results";
-
   const subtitle =
     settings?.subtitle || "Watch, learn, and shop our expert recommendations";
-
   const isMuted = settings?.muted !== false;
 
   const items = useMemo(
     () => data?.filter((slide) => slide?.videoUrl && slide?.product) || [],
     [data],
   );
+
+  const scroll = (direction: "left" | "right") => {
+    if (!scrollRef.current) return;
+
+    const card = scrollRef.current.querySelector(
+      "[data-video-card]",
+    ) as HTMLElement;
+
+    const width = card?.offsetWidth || 300;
+
+    scrollRef.current.scrollBy({
+      left: direction === "left" ? -width - 24 : width + 24,
+      behavior: "smooth",
+    });
+  };
+
+  /**
+   * Monitor scroll position to show/hide navigation arrows dynamically
+   */
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container || !items.length) return;
+
+    const checkScrollPosition = () => {
+      const { scrollLeft, scrollWidth, clientWidth } = container;
+      // Using a 4px buffer to safeguard against fractional pixel precision variations
+      setCanScrollLeft(scrollLeft > 4);
+      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 4);
+    };
+
+    // Run initial evaluation
+    checkScrollPosition();
+
+    container.addEventListener("scroll", checkScrollPosition, { passive: true });
+    window.addEventListener("resize", checkScrollPosition);
+
+    // Re-verify after elements complete initialization layout
+    const timeoutId = setTimeout(checkScrollPosition, 400);
+
+    return () => {
+      container.removeEventListener("scroll", checkScrollPosition);
+      window.removeEventListener("resize", checkScrollPosition);
+      clearTimeout(timeoutId);
+    };
+  }, [items]);
 
   /**
    * Auto play/pause on viewport visibility
@@ -76,26 +121,25 @@ export const VideoShoppableSection: React.FC<VideoShoppableProps> = ({
     );
 
     const videos = containerRef.current?.querySelectorAll("video");
-
     videos?.forEach((video) => observer.observe(video));
 
     return () => observer.disconnect();
   }, [items]);
-
-  // Replace: if (!items.length) return null; 
-  // With this:
 
   if (!items.length) {
     return (
       <section className={`w-full bg-zinc-50 ${SECTION_SPACING}`}>
         <div className={CONTAINER_SPACING}>
           <div className="flex min-h-[300px] flex-col items-center justify-center rounded-3xl border-2 border-dashed border-zinc-200 bg-white p-8 text-center md:p-12">
-             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-100">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-100">
               <Play className="h-8 w-8 text-zinc-400" />
             </div>
-            <h3 className="text-lg font-bold text-zinc-900">Shoppable Video Section</h3>
+            <h3 className="text-lg font-bold text-zinc-900">
+              Shoppable Video Section
+            </h3>
             <p className="mt-2 max-w-sm text-sm text-zinc-500">
-              Add video reels and link products from the configuration panel to preview them here.
+              Add video reels and link products from the configuration panel to
+              preview them here.
             </p>
           </div>
         </div>
@@ -123,22 +167,87 @@ export const VideoShoppableSection: React.FC<VideoShoppableProps> = ({
 
         {/* Carousel Wrapper */}
         <div className="relative">
-          {/* Right Fade */}
-          <div className="pointer-events-none absolute right-0 top-0 z-10 hidden h-full w-16 bg-gradient-to-l from-white to-transparent md:block" />
+          {/* Left Navigation Arrow */}
+          {canScrollLeft && (
+            <button
+              onClick={() => scroll("left")}
+              className="
+                absolute
+                top-1/2
+                z-30
+                hidden
+                h-11
+                w-11
+                -translate-y-1/2
+                items-center
+                justify-center
+                rounded-full
+                border
+                border-zinc-200
+                bg-white
+                lg:flex
+                hover:bg-zinc-50
+                transition-all
+                shadow-md
+                lg:-left-6
+                xl:-left-12
+              "
+              aria-label="Scroll left"
+            >
+              <ChevronLeft size={18} />
+            </button>
+          )}
 
-          {/* Carousel */}
+          {/* Right Navigation Arrow */}
+          {canScrollRight && (
+            <button
+              onClick={() => scroll("right")}
+              className="
+                absolute
+                top-1/2
+                z-30
+                hidden
+                h-11
+                w-11
+                -translate-y-1/2
+                items-center
+                justify-center
+                rounded-full
+                border
+                border-zinc-200
+                bg-white
+                lg:flex
+                hover:bg-zinc-50
+                transition-all
+                shadow-md
+                lg:-right-6
+                xl:-right-12
+              "
+              aria-label="Scroll right"
+            >
+              <ChevronRight size={18} />
+            </button>
+          )}
+
+          {/* Carousel Track */}
           <div
-            ref={containerRef}
-            className={cn(
-              "flex overflow-x-auto overflow-y-hidden",
-              "gap-4 md:gap-6 lg:gap-8",
-              "snap-x snap-mandatory",
-              "scrollbar-none pb-4",
-            )}
-            style={{
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
+            ref={(node) => {
+              scrollRef.current = node;
+              containerRef.current = node;
             }}
+            className="
+              flex
+              gap-4
+              overflow-x-auto
+              snap-x
+              snap-mandatory
+              scroll-smooth
+              pb-2
+
+              [-ms-overflow-style:none]
+              [scrollbar-width:none]
+              [&::-webkit-scrollbar]:hidden
+            "
           >
             {items.map((slide, index) => {
               const safeImageSrc = isValidImageUrl(slide.product?.image)
@@ -152,82 +261,140 @@ export const VideoShoppableSection: React.FC<VideoShoppableProps> = ({
               return (
                 <div
                   key={index}
-                  className={cn(
-                    "group relative flex-none",
-                    "w-[240px] h-[420px]",
-                    "sm:w-[260px] sm:h-[460px]",
-                    "md:w-[280px] md:h-[500px]",
-                    "lg:w-[320px] lg:h-[580px]",
-                    "snap-start overflow-hidden",
-                    "rounded-3xl bg-zinc-900 shadow-xl",
-                  )}
+                  data-video-card
+                  className="
+                    group
+                    relative
+                    flex-shrink-0
+                    snap-start
+                    overflow-hidden
+                    rounded-[28px]
+                    bg-zinc-900
+
+                    w-[180px]
+                    sm:w-[220px]
+                    md:w-[260px]
+                    lg:w-[280px]
+                    xl:w-[300px]
+
+                    transition-transform
+                    duration-300
+                    hover:-translate-y-1
+                  "
                 >
-                  {/* Media */}
-                  {isVideo ? (
-                    <video
-                      src={slide.videoUrl}
-                      loop
-                      muted={isMuted}
-                      playsInline
-                      poster={safeImageSrc}
-                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                  ) : (
-                    <img
-                      src={slide.videoUrl}
-                      alt="Reel Media"
-                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                  )}
+                  <div className="relative aspect-[9/16]">
+                    {isVideo ? (
+                      <video
+                        src={slide.videoUrl}
+                        loop
+                        muted={isMuted}
+                        playsInline
+                        poster={safeImageSrc}
+                        className="
+                          absolute
+                          inset-0
+                          h-full
+                          w-full
+                          object-cover
+                          transition-transform
+                          duration-700
+                          group-hover:scale-105
+                        "
+                      />
+                    ) : (
+                      <img
+                        src={slide.videoUrl}
+                        alt="Video"
+                        className="
+                          absolute
+                          inset-0
+                          h-full
+                          w-full
+                          object-cover
+                          transition-transform
+                          duration-700
+                          group-hover:scale-105
+                        "
+                      />
+                    )}
 
-                  {/* Overlay */}
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/80" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/90" />
 
-                  {/* Badge */}
-                  <div className="absolute left-4 top-4 z-10 text-white">
-                    <div className="flex items-center gap-1.5 rounded-full bg-black/30 px-3 py-1.5 backdrop-blur-md">
-                      <Play size={12} fill="currentColor" />
-                      <span className="text-[10px] font-semibold">
-                        Trending
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Product Card */}
-                  <div className="absolute bottom-4 left-4 right-4 z-10 translate-y-2 transition-transform duration-300 group-hover:translate-y-0">
-                    <Link href={`/product/${slide.product.slug}`}>
-                      <div className="flex items-center gap-4 rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur-xl transition-colors hover:bg-white/20">
-                        {/* Product Image */}
-                        <img
-                          src={safeImageSrc}
-                          alt={slide.product.name || "Product"}
-                          className="h-14 w-14 rounded-xl border border-white/10 bg-white object-cover shadow-sm"
-                          onError={(e) => {
-                            if (
-                              !e.currentTarget.src.includes("/placeholder.png")
-                            ) {
-                              e.currentTarget.src = "/placeholder.png";
-                            }
-                          }}
-                        />
-
-                        {/* Product Info */}
-                        <div className="min-w-0 flex-1">
-                          <h3 className="truncate text-sm font-semibold text-white">
-                            {slide.product.name}
-                          </h3>
-
-                          <p className="text-xs font-medium text-white/80">
-                            ₹{slide.product.price}
-                          </p>
-                        </div>
-
-                        {/* CTA */}
-                        <button className="rounded-xl bg-white p-3 text-black shadow-lg transition-transform hover:scale-105">
-                          <ShoppingBag size={18} strokeWidth={2.2} />
-                        </button>
+                    <div className="absolute left-3 top-3 z-20">
+                      <div className="rounded-full bg-black/40 px-3 py-1.5 backdrop-blur-md">
+                        <span className="text-[10px] font-semibold text-white">
+                          TRENDING
+                        </span>
                       </div>
-                    </Link>
+                    </div>
+
+                    <div className="absolute bottom-3 left-3 right-3 z-20">
+                      <Link href={`/product/${slide.product.slug}`}>
+                        <div
+                          className="
+                            flex
+                            items-center
+                            gap-3
+                            rounded-2xl
+                            border
+                            border-white/20
+                            bg-white/15
+                            p-3
+                            backdrop-blur-xl
+                            transition-all
+                            duration-300
+                            hover:bg-white/25
+                          "
+                        >
+                          <img
+                            src={safeImageSrc}
+                            alt={slide.product.name}
+                            className="
+                              h-12
+                              w-12
+                              flex-shrink-0
+                              rounded-xl
+                              bg-white
+                              object-cover
+                            "
+                            onError={(e) => {
+                              if (
+                                !e.currentTarget.src.includes(
+                                  "/placeholder.png",
+                                )
+                              ) {
+                                e.currentTarget.src = "/placeholder.png";
+                              }
+                            }}
+                          />
+
+                          <div className="min-w-0 flex-1">
+                            <h3 className="truncate text-xs font-semibold text-white md:text-sm">
+                              {slide.product.name}
+                            </h3>
+
+                            <p className="mt-1 text-xs font-medium text-white/80">
+                              ₹{slide.product.price}
+                            </p>
+                          </div>
+
+                          <div
+                            className="
+                              flex
+                              h-9
+                              w-9
+                              items-center
+                              justify-center
+                              rounded-xl
+                              bg-white
+                              text-black
+                            "
+                          >
+                            <ShoppingBag size={16} />
+                          </div>
+                        </div>
+                      </Link>
+                    </div>
                   </div>
                 </div>
               );
