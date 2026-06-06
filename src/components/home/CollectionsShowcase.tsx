@@ -231,7 +231,7 @@ export const CollectionsShowcase: React.FC<CollectionsShowcaseProps> = ({
   const rawProducts = collection.products;
   const productsToRender = rawProducts
     .map((p: any) => (p.product ? p.product : p))
-    .slice(0, 4);
+    .slice(0, 8);
 
   return (
     <section className={`w-full ${SECTION_SPACING}`}>
