@@ -6,116 +6,192 @@ import ProductCard from "@/components/ui/ProductCard";
 
 export const revalidate = 60; // ISR cache for 60 seconds
 
-// 🚨 1. Type params as a Promise for Next.js 15
-export default async function CollectionPage({ params }: { params: Promise<{ slug: string }> }) {
-  // 🚨 2. Await the params to extract the actual slug string
-  const { slug } = await params;
-  
-  
-  const headersList = await headers();
-  const domain = headersList.get("x-forwarded-host") || headersList.get("host") || "localhost";
-  
-  let collection = null;
+interface CollectionPageProps {
+  params: Promise<{ slug: string }>;
+}
 
+/**
+ * Validate image URL string structure
+ */
+const isValidImageUrl = (url?: string): boolean => {
+  if (!url || typeof url !== "string") return false;
+  if (url.startsWith("/")) return true;
   try {
-    // 🚨 3. Pass the unwrapped slug to the API
-    const res = await apiClient.get(`/collections/${slug}`, {
-      headers: { "x-tenant-domain": domain },
-    });
-    
-    // Safely extract the data accounting for custom Axios interceptors
-    collection = Array.isArray(res) ? res : (res.data || res);
-
-  } catch (error) {
-    console.error(`[SSR] Failed to fetch collection for slug: ${slug}`, error);
-    return notFound(); // Triggers your Next.js not-found.tsx
-  }
-
-  // Fallback if data is missing or empty
-  if (!collection || !collection.products) return notFound();
-
-
-
-const isValidImageUrl = (url?: string) => {
-  if (!url || typeof url !== 'string') return false;
-  if (url.startsWith('/')) return true; // Relative paths like /placeholder.png are fine
-  try {
-    new URL(url); // This will throw an error if the URL is malformed/dummy text
+    new URL(url);
     return true;
   } catch {
     return false;
   }
 };
 
+export default async function CollectionPage({ params }: CollectionPageProps) {
+  const { slug } = await params;
 
+  const headersList = await headers();
+  const domain =
+    headersList.get("x-forwarded-host") ||
+    headersList.get("host") ||
+    "localhost";
 
+  let collection = null;
 
+  try {
+    const res = await apiClient.get(`/collections/${slug}`, {
+      headers: { "x-tenant-domain": domain },
+    });
+
+    collection = Array.isArray(res) ? res : res.data || res;
+  } catch (error) {
+    console.error(`[SSR] Failed to fetch collection for slug: ${slug}`, error);
+    return notFound();
+  }
+
+  if (!collection || !collection.products) return notFound();
+
+  const hasValidHeroImage =
+    collection.image && isValidImageUrl(collection.image);
 
   return (
-    <main className="min-h-screen bg-gray-50 pt-24 pb-12">
-      {/* Hero Section for Collection */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-        <div className="relative rounded-3xl overflow-hidden bg-white shadow-sm border border-gray-100 p-8 md:p-12 flex flex-col md:flex-row items-center gap-8">
-          
-          <div className="flex-1 text-center md:text-left z-10">
-            <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-4 tracking-tight uppercase">
+    <main className="min-h-screen bg-zinc-50 pb-16 pt-24">
+      {/* Premium Hero Banner Section */}
+      <div className="mx-auto mb-12 max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div
+          className={`
+            relative 
+            w-full 
+            overflow-hidden 
+            rounded-[32px] 
+            border 
+            border-zinc-200/60 
+            bg-zinc-900 
+            shadow-sm
+            ${hasValidHeroImage ? "aspect-[2/1]" : "py-12 md:py-16 px-8 md:px-12 bg-gradient-to-br from-zinc-900 to-zinc-800"}
+          `}
+        >
+          {/* Dynamic Background Image Layer */}
+          {hasValidHeroImage && (
+            <>
+              <Image
+                src={collection.image}
+                alt={collection.name}
+                fill
+                priority
+                className="object-cover object-center"
+                sizes="(max-width: 1280px) 100vw, 1216px"
+              />
+              {/* Responsive Cinematic Scrim Overlay */}
+              <div className="absolute inset-0 z-10 bg-gradient-to-t from-zinc-950/90 via-zinc-950/40 to-zinc-950/20 md:bg-gradient-to-r md:from-zinc-950/95 md:via-zinc-950/60 md:to-transparent" />
+            </>
+          )}
+
+          {/* Banner Content Layer */}
+          <div
+            className={`
+              relative 
+              z-20 
+              flex 
+              h-full 
+              w-full 
+              flex-col 
+              justify-end 
+              p-6 
+              sm:p-10 
+              md:max-w-2xl 
+              md:justify-center
+              ${!hasValidHeroImage ? "md:max-w-none" : ""}
+            `}
+          >
+            <span className="mb-2 text-xs font-bold tracking-widest text-emerald-400 uppercase sm:mb-3">
+              Curated Collection
+            </span>
+
+            <h1
+              className={`
+                text-2xl 
+                font-black 
+                tracking-tight 
+                uppercase 
+                sm:text-4xl 
+                md:text-5xl 
+                lg:text-6xl
+                ${hasValidHeroImage ? "text-white" : "text-white"}
+              `}
+            >
               {collection.name}
             </h1>
+
             {collection.description && (
-              <p className="text-lg text-gray-500 max-w-2xl leading-relaxed font-medium">
+              <p
+                className={`
+                  mt-3 
+                  line-clamp-2 
+                  text-sm 
+                  font-medium 
+                  leading-relaxed 
+                  sm:mt-4 
+                  sm:text-base 
+                  md:line-clamp-3
+                  ${hasValidHeroImage ? "text-zinc-200" : "text-zinc-300"}
+                `}
+              >
                 {collection.description}
               </p>
             )}
-            <div className="mt-6 inline-flex items-center bg-green-50 text-[#217A6E] px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest border border-green-100">
-              {collection.products.length} Products
+
+            <div className="mt-4 sm:mt-6">
+              <span className="inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-xs font-bold tracking-wider text-emerald-400 uppercase backdrop-blur-md">
+                {collection.products.length} Products Available
+              </span>
             </div>
           </div>
-
-          {/* 🚨 THE FIX: Only render the image wrapper if the image URL is strictly valid */}
-          {collection.image && isValidImageUrl(collection.image) && (
-            <div className="absolute inset-0 md:relative md:inset-auto w-full md:w-1/3 aspect-[4/3] opacity-10 md:opacity-100 rounded-2xl overflow-hidden bg-gray-100">
-              <Image 
-                src={collection.image} 
-                alt={collection.name} 
-                fill 
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 33vw"
-              />
-              {/* Fade mask to ensure mobile text remains readable over the background image */}
-              <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent md:hidden" />
-            </div>
-          )}
-
         </div>
       </div>
 
-      {/* Product Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-black text-gray-900 tracking-tight uppercase">Explore Collection</h2>
-          
-          {/* Sort Dropdown */}
-          {/* <select className="bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[#217A6E] shadow-sm cursor-pointer hover:border-[#217A6E] transition-colors">
-            <option>Featured</option>
-            <option>Price: Low to High</option>
-            <option>Price: High to Low</option>
-          </select> */}
+      {/* Product Feed Grid */}
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-8 flex items-center justify-between border-b border-zinc-200/80 pb-4">
+          <h2 className="text-xl font-extrabold tracking-tight text-zinc-900 uppercase sm:text-2xl">
+            Explore Catalog
+          </h2>
+          <span className="text-sm font-semibold text-zinc-400">
+            Showing All Results
+          </span>
         </div>
 
         {collection.products.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
             {collection.products.map((product: any) => (
-              <ProductCard key={product.id} product={product} />
+              <div
+                key={product.id}
+                className="transition-all duration-300 hover:-translate-y-1"
+              >
+                <ProductCard product={product} />
+              </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-24 bg-white rounded-3xl border border-gray-100 shadow-sm flex flex-col items-center justify-center">
-            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4 border border-gray-100">
-               <svg className="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                 <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-               </svg>
+          <div className="flex flex-col items-center justify-center rounded-[32px] border border-zinc-200 border-dashed bg-white py-24 text-center shadow-sm">
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-zinc-100 bg-zinc-50 text-zinc-400">
+              <svg
+                className="h-7 w-7"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                />
+              </svg>
             </div>
-            <h3 className="text-xl font-bold text-gray-400">No products found in this collection.</h3>
+            <h3 className="text-lg font-bold text-zinc-800">
+              Collection Empty
+            </h3>
+            <p className="mt-1 text-sm text-zinc-400">
+              Check back soon for new additions to this catalog.
+            </p>
           </div>
         )}
       </div>

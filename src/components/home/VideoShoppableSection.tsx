@@ -79,7 +79,9 @@ export const VideoShoppableSection: React.FC<VideoShoppableProps> = ({
     // Run initial evaluation
     checkScrollPosition();
 
-    container.addEventListener("scroll", checkScrollPosition, { passive: true });
+    container.addEventListener("scroll", checkScrollPosition, {
+      passive: true,
+    });
     window.addEventListener("resize", checkScrollPosition);
 
     // Re-verify after elements complete initialization layout
@@ -171,8 +173,7 @@ export const VideoShoppableSection: React.FC<VideoShoppableProps> = ({
           {canScrollLeft && (
             <button
               onClick={() => scroll("left")}
-              className="
-                absolute
+              className={cn(`absolute
                 top-1/2
                 z-30
                 hidden
@@ -190,8 +191,7 @@ export const VideoShoppableSection: React.FC<VideoShoppableProps> = ({
                 transition-all
                 shadow-md
                 lg:-left-6
-                xl:-left-12
-              "
+                xl:-left-12`)}
               aria-label="Scroll left"
             >
               <ChevronLeft size={18} />
@@ -202,8 +202,7 @@ export const VideoShoppableSection: React.FC<VideoShoppableProps> = ({
           {canScrollRight && (
             <button
               onClick={() => scroll("right")}
-              className="
-                absolute
+              className={cn(`absolute
                 top-1/2
                 z-30
                 hidden
@@ -222,7 +221,7 @@ export const VideoShoppableSection: React.FC<VideoShoppableProps> = ({
                 shadow-md
                 lg:-right-6
                 xl:-right-12
-              "
+              `)}
               aria-label="Scroll right"
             >
               <ChevronRight size={18} />
@@ -235,8 +234,7 @@ export const VideoShoppableSection: React.FC<VideoShoppableProps> = ({
               scrollRef.current = node;
               containerRef.current = node;
             }}
-            className="
-              flex
+            className={cn(` flex
               gap-4
               overflow-x-auto
               snap-x
@@ -246,8 +244,7 @@ export const VideoShoppableSection: React.FC<VideoShoppableProps> = ({
 
               [-ms-overflow-style:none]
               [scrollbar-width:none]
-              [&::-webkit-scrollbar]:hidden
-            "
+              [&::-webkit-scrollbar]:hidden`)}
           >
             {items.map((slide, index) => {
               const safeImageSrc = isValidImageUrl(slide.product?.image)
@@ -262,8 +259,7 @@ export const VideoShoppableSection: React.FC<VideoShoppableProps> = ({
                 <div
                   key={index}
                   data-video-card
-                  className="
-                    group
+                  className={cn(`group
                     relative
                     flex-shrink-0
                     snap-start
@@ -279,8 +275,9 @@ export const VideoShoppableSection: React.FC<VideoShoppableProps> = ({
 
                     transition-transform
                     duration-300
-                    hover:-translate-y-1
-                  "
+                    hover:-translate-y-1`)}
+                    
+              
                 >
                   <div className="relative aspect-[9/16]">
                     {isVideo ? (
@@ -290,8 +287,7 @@ export const VideoShoppableSection: React.FC<VideoShoppableProps> = ({
                         muted={isMuted}
                         playsInline
                         poster={safeImageSrc}
-                        className="
-                          absolute
+                        className={cn(`absolute
                           inset-0
                           h-full
                           w-full
@@ -299,13 +295,14 @@ export const VideoShoppableSection: React.FC<VideoShoppableProps> = ({
                           transition-transform
                           duration-700
                           group-hover:scale-105
-                        "
+                        `)}
+                          
                       />
                     ) : (
                       <img
                         src={slide.videoUrl}
                         alt="Video"
-                        className="
+                        className={cn(`
                           absolute
                           inset-0
                           h-full
@@ -314,7 +311,7 @@ export const VideoShoppableSection: React.FC<VideoShoppableProps> = ({
                           transition-transform
                           duration-700
                           group-hover:scale-105
-                        "
+                        `)}
                       />
                     )}
 
@@ -331,8 +328,7 @@ export const VideoShoppableSection: React.FC<VideoShoppableProps> = ({
                     <div className="absolute bottom-3 left-3 right-3 z-20">
                       <Link href={`/product/${slide.product.slug}`}>
                         <div
-                          className="
-                            flex
+                          className={cn(`flex
                             items-center
                             gap-3
                             rounded-2xl
@@ -343,20 +339,20 @@ export const VideoShoppableSection: React.FC<VideoShoppableProps> = ({
                             backdrop-blur-xl
                             transition-all
                             duration-300
-                            hover:bg-white/25
-                          "
+                            hover:bg-white/25`)}
+                            
                         >
                           <img
                             src={safeImageSrc}
                             alt={slide.product.name}
-                            className="
-                              h-12
+                            className={cn(` h-12
                               w-12
                               flex-shrink-0
                               rounded-xl
                               bg-white
                               object-cover
-                            "
+                            `)}
+                             
                             onError={(e) => {
                               if (
                                 !e.currentTarget.src.includes(
@@ -379,7 +375,7 @@ export const VideoShoppableSection: React.FC<VideoShoppableProps> = ({
                           </div>
 
                           <div
-                            className="
+                            className={cn(`
                               flex
                               h-9
                               w-9
@@ -388,7 +384,7 @@ export const VideoShoppableSection: React.FC<VideoShoppableProps> = ({
                               rounded-xl
                               bg-white
                               text-black
-                            "
+                            `)}
                           >
                             <ShoppingBag size={16} />
                           </div>
