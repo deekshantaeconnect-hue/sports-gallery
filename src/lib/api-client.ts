@@ -63,8 +63,8 @@ apiClient.interceptors.request.use((config) => {
 
     // Add the header expected by the backend
     config.headers["x-session-id"] = sessionId;
-    config.headers["x-store-slug"] = BRAND.useStoreName;
   }
+    config.headers["x-store-slug"] = BRAND.useStoreName;
 
   return config;
 });
