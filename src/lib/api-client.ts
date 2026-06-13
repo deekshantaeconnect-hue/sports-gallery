@@ -2,6 +2,7 @@
 import axios from "axios";
 import { useAuthStore } from "@/store/useAuthStore";
 import * as Sentry from "@sentry/nextjs";
+import { BRAND } from "@/config/brand.config";
 
 // This "Augmentation" tells TS that axios methods return the data directly
 declare module "axios" {
@@ -62,6 +63,7 @@ apiClient.interceptors.request.use((config) => {
 
     // Add the header expected by the backend
     config.headers["x-session-id"] = sessionId;
+    config.headers["x-store-slug"] = BRAND.useStoreName;
   }
 
   return config;
