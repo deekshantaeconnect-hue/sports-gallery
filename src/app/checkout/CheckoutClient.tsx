@@ -986,11 +986,24 @@ export default function CheckoutClient() {
         {/* TOTALS */}
 
         <div className="space-y-3 border-t pt-5">
-          <div className="flex justify-between text-sm text-gray-600">
+          <div className="border-t pt-3 text-sm text-gray-600 space-y-2">
+
+  <div className="flex justify-between">
+    <span>Subtotal (Base)</span>
+    <span>₹{(cartTotal / 1.18).toFixed(2)}</span>
+  </div>
+
+  <div className="flex justify-between">
+    <span>GST (18%)</span>
+    <span>₹{(cartTotal - cartTotal / 1.18).toFixed(2)}</span>
+  </div>
+
+</div>
+          {/* <div className="flex justify-between text-sm text-gray-600">
             <span>Subtotal</span>
 
             <span>₹{cartTotal.toFixed(2)}</span>
-          </div>
+          </div> */}
 
           <div className="flex justify-between text-sm text-gray-600">
             <span>Delivery Charges</span>

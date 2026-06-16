@@ -12,6 +12,7 @@ import {
   normalizeMediaCollection,
   resolveFirstProductImage,
 } from "@/utils/media-normalization"; // 🔥 IMPORT RESOLVER HELPER
+import { removeGST } from "@/utils/gst";
 
 interface ProductCardProps {
   product: {
@@ -35,6 +36,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   // 1. Derive base pricing entirely from variants
   const variants = product.variants || [];
 
+  // Cheapest & Highest Variant
   const cheapestVariant =
     variants.length > 0
       ? variants.reduce(
@@ -43,10 +45,29 @@ export default function ProductCard({ product }: ProductCardProps) {
         )
       : null;
 
-  const currentPrice = cheapestVariant?.price || 0;
-  const oldPrice = cheapestVariant?.oldPrice;
+  const highestVariant =
+    variants.length > 0
+      ? variants.reduce(
+          (prev, curr) => (prev.price > curr.price ? prev : curr),
+          variants[0],
+        )
+      : null;
+  // Remove 18% GST
+  
+  const cheapestPrice = cheapestVariant
+    ? removeGST(Number(cheapestVariant.price))
+    : 0;
 
-  // 2. Calculate discount safely from the variant's prices
+  const highestPrice = highestVariant
+    ? removeGST(Number(highestVariant.price))
+    : 0;
+
+  const currentPrice = cheapestPrice;
+
+  const oldPrice = cheapestVariant?.oldPrice
+    ? removeGST(Number(cheapestVariant.oldPrice))
+    : null;
+
   const discountPercent =
     oldPrice && oldPrice > currentPrice
       ? Math.round(((oldPrice - currentPrice) / oldPrice) * 100)
@@ -193,19 +214,28 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="flex-grow" />
 
         {/* Pricing (Derived strictly from Variants) */}
-        <div className="mt-3 flex items-baseline gap-2">
-          {variants.length > 1 && (
-            <span className="text-xs font-medium text-neutral-500">From</span>
-          )}
-          <span className="text-base sm:text-lg font-semibold text-neutral-900">
-            ₹{currentPrice.toLocaleString("en-IN")}
-          </span>
-          {oldPrice && (
-            <span className="text-xs sm:text-sm text-neutral-400 line-through">
-              ₹{oldPrice.toLocaleString("en-IN")}
-            </span>
-          )}
-        </div>
+        <div className="mt-3 flex items-baseline gap-2 flex-wrap">
+  {variants.length > 1 ? (
+    <>
+      <span className="text-base sm:text-lg font-semibold text-neutral-900">
+        ₹{cheapestPrice.toLocaleString("en-IN")} - ₹
+        {highestPrice.toLocaleString("en-IN")}
+      </span>
+    </>
+  ) : (
+    <>
+      <span className="text-base sm:text-lg font-semibold text-neutral-900">
+        ₹{cheapestPrice.toLocaleString("en-IN")}
+      </span>
+
+      {oldPrice && (
+        <span className="text-xs sm:text-sm text-neutral-400 line-through">
+          ₹{oldPrice.toLocaleString("en-IN")}
+        </span>
+      )}
+    </>
+  )}
+</div>
 
         {/* CTA SECTION */}
         <div className="mt-3">
