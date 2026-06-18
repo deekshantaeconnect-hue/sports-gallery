@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ProductApi } from "@/services/product.service";
 import { resolveFirstProductImage } from "@/utils/media-normalization";
+import { removeGST } from "@/utils/gst";
 
 interface SimilarProductsProps {
   category: any; // Can be a string or the populated {id, name, slug} object
@@ -51,7 +52,9 @@ export default async function SimilarProducts({
                 )
               : 0;
             // Use the first image array item OR the single image string based on your schema
-            const displayImage = resolveFirstProductImage(item?.images) || "/placeholder-product.png";
+            const displayImage =
+              resolveFirstProductImage(item?.images) ||
+              "/placeholder-product.png";
 
             return (
               <Link
@@ -84,7 +87,7 @@ export default async function SimilarProducts({
 
                     <div className="flex items-baseline space-x-2 mt-1">
                       <span className="text-lg font-bold text-gray-900">
-                        ₹{item.price.toLocaleString("en-IN")}
+                        ₹{removeGST(item.price)}
                       </span>
                     </div>
 
