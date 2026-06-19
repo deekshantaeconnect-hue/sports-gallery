@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
@@ -10,10 +10,35 @@ import { cn } from "@/lib/utils";
 
 export default function MegaMenuClient({ groups }: { groups: any[] }) {
   const [activeGroup, setActiveGroup] = useState<string | null>(null);
+  const [dropdownPosition, setDropdownPosition] = useState<"left" | "right">("left");
+  const navRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const pathname = usePathname();
 
   const capitalize = (str: string) =>
     str.charAt(0).toUpperCase() + str.slice(1);
+
+  const calculatePosition = (groupId: string) => {
+    const element = navRefs.current[groupId];
+    if (!element) return "left";
+
+    const rect = element.getBoundingClientRect();
+    const dropdownWidth = 600;
+    const rightEdge = rect.right + dropdownWidth;
+    const viewportWidth = window.innerWidth;
+
+    if (rightEdge > viewportWidth) {
+      return "right";
+    }
+    return "left";
+  };
+
+  const handleMouseEnter = (groupId: string, isLink: boolean) => {
+    if (!isLink) {
+      const position = calculatePosition(groupId);
+      setDropdownPosition(position);
+      setActiveGroup(groupId);
+    }
+  };
 
   return (
     <nav
@@ -29,8 +54,11 @@ export default function MegaMenuClient({ groups }: { groups: any[] }) {
         return (
           <div
             key={group.id}
+            ref={(el) => {
+              navRefs.current[group.id] = el;
+            }}
             className="relative h-full flex items-center"
-            onMouseEnter={() => !isLink && setActiveGroup(group.id)}
+            onMouseEnter={() => handleMouseEnter(group.id, isLink)}
           >
             {isLink ? (
               <Link
@@ -40,6 +68,7 @@ export default function MegaMenuClient({ groups }: { groups: any[] }) {
                   "text-[15px] font-medium",
                   "transition-colors duration-200",
                   "py-2 px-1",
+                  "whitespace-nowrap", // ← KEEP TITLE IN ONE LINE
                   isCurrentPath
                     ? "text-[#217A6E]"
                     : "text-gray-800 hover:text-[#217A6E]",
@@ -56,6 +85,7 @@ export default function MegaMenuClient({ groups }: { groups: any[] }) {
                   "relative inline-flex items-center gap-1",
                   "text-[15px] font-medium",
                   "transition-colors duration-200 h-full",
+                  "whitespace-nowrap", // ← KEEP TITLE IN ONE LINE
                   isActive
                     ? "text-[#217A6E]"
                     : "text-gray-800 hover:text-[#217A6E]",
@@ -65,13 +95,14 @@ export default function MegaMenuClient({ groups }: { groups: any[] }) {
                 <ChevronDown
                   className={cn(
                     "w-4 h-4 transition-transform duration-200",
+                    "flex-shrink-0", // ← PREVENT ICON SHRINKING
                     isActive ? "rotate-180" : "",
                   )}
                 />
               </button>
             )}
 
-            {/* Dropdown Panel - Same as before */}
+            {/* Dropdown Panel */}
             <AnimatePresence>
               {isActive && !isLink && (
                 <motion.div
@@ -79,9 +110,15 @@ export default function MegaMenuClient({ groups }: { groups: any[] }) {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 5 }}
                   transition={{ duration: 0.15, ease: "easeOut" }}
-                  className="absolute left-0 top-[90%] z-50 pt-0"
+                  className={cn(
+                    "absolute top-[90%] z-50 pt-0",
+                    dropdownPosition === "right" ? "right-0" : "left-0"
+                  )}
                 >
-                  <div className="absolute -top-4 left-0 w-full h-4 bg-transparent" />
+                  <div className={cn(
+                    "absolute -top-4 w-full h-4 bg-transparent",
+                    dropdownPosition === "right" ? "right-0" : "left-0"
+                  )} />
                   <div
                     className={cn(
                       "w-[min(600px,95vw)]",
@@ -90,6 +127,7 @@ export default function MegaMenuClient({ groups }: { groups: any[] }) {
                       "border border-gray-200",
                       "bg-white",
                       "shadow-xl",
+                      dropdownPosition === "right" && "origin-top-right"
                     )}
                   >
                     <div className="grid grid-cols-12 items-stretch">
