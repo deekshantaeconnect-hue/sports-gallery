@@ -8,25 +8,22 @@ import Link from "next/link";
 import { useUIStore } from "@/store/useUIStore";
 import { BRAND } from "@/config/brand.config";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export function MobileMenuDrawer({ groups }: { groups: any[] }) {
   const { isMobileMenuOpen, closeMobileMenu } = useUIStore();
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // Clean background scroll lock without shifting layout coordinates
   useEffect(() => {
     if (!isMobileMenuOpen) return;
 
-    // Capture original document overflow styles
     const originalHtmlOverflow = document.documentElement.style.overflow;
     const originalBodyOverflow = document.body.style.overflow;
 
-    // Lock both root layers smoothly to protect mobile viewports
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
 
-    // Re-verify inner drawer is container-scrolled to top
     requestAnimationFrame(() => {
       if (scrollContainerRef.current) {
         scrollContainerRef.current.scrollTop = 0;
@@ -34,7 +31,6 @@ export function MobileMenuDrawer({ groups }: { groups: any[] }) {
     });
 
     return () => {
-      // Revert cleanly to default document scroll styles
       document.documentElement.style.overflow = originalHtmlOverflow;
       document.body.style.overflow = originalBodyOverflow;
     };
@@ -47,12 +43,10 @@ export function MobileMenuDrawer({ groups }: { groups: any[] }) {
   return (
     <AnimatePresence>
       {isMobileMenuOpen && (
-        /* FIX: Absolute view framing using z-[9999] to clear header contexts completely */
-        <div 
+        <div
           className="fixed inset-0 z-[9999] flex lg:hidden overflow-hidden overscroll-none"
           style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0 }}
         >
-          {/* Overlay Mask */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -61,20 +55,17 @@ export function MobileMenuDrawer({ groups }: { groups: any[] }) {
             onClick={closeMobileMenu}
           />
 
-          {/* Drawer Container */}
           <motion.div
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ type: "tween", duration: 0.25, ease: "easeOut" }}
-            /* FIX: Swapped dvh utilities for ultra-stable h-screen with absolute box constraints */
             className="relative w-[85%] max-w-[360px] bg-white h-screen shadow-2xl flex flex-col overflow-hidden"
             style={{
               height: "100vh",
               maxHeight: "100%",
             }}
           >
-            {/* Drawer Header Area */}
             <div className="flex items-center justify-between p-5 border-b border-gray-100 bg-gray-50/50 shrink-0">
               <div className="flex items-center gap-3">
                 <span className="text-xl font-black text-[#217A6E] tracking-tight">
@@ -91,7 +82,6 @@ export function MobileMenuDrawer({ groups }: { groups: any[] }) {
               </button>
             </div>
 
-            {/* Scrollable Viewport Link List */}
             <div
               ref={scrollContainerRef}
               className="flex-1 overflow-y-auto py-2 px-4 overscroll-contain touch-auto select-text"
@@ -126,32 +116,38 @@ export function MobileMenuDrawer({ groups }: { groups: any[] }) {
                             <span>{group.title}</span>
                             <ChevronDown
                               size={18}
-                              className={`transition-transform duration-200 ${
-                                isExpanded
-                                  ? "rotate-180 text-[#217A6E]"
-                                  : "text-gray-400"
-                              }`}
+                              className={cn(
+                                `transition-transform duration-200 ${
+                                  isExpanded
+                                    ? "rotate-180 text-[#217A6E]"
+                                    : "text-gray-400"
+                                }`,
+                              )}
                             />
                           </button>
 
-                          {/* Nested Accordion Panel */}
                           <AnimatePresence initial={false}>
                             {isExpanded && (
                               <motion.div
                                 initial={{ height: 0, opacity: 0 }}
                                 animate={{ height: "auto", opacity: 1 }}
                                 exit={{ height: 0, opacity: 0 }}
-                                transition={{ duration: 0.2, ease: "easeInOut" }}
+                                transition={{
+                                  duration: 0.2,
+                                  ease: "easeInOut",
+                                }}
                                 className="overflow-hidden"
                               >
                                 <div className="pl-3 pb-4 space-y-5 pt-1 border-l-2 border-[#217A6E]/20 ml-2 mb-2 mt-1">
                                   {group.columns?.map((col: any) => (
                                     <div key={col.id}>
-                                      {col.title && (
-                                        <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3 ml-2">
-                                          {col.title}
-                                        </h4>
-                                      )}
+                                      {/* ← ADD CONDITIONAL HEADING */}
+                                      {col.showHeading !== false &&
+                                        col.title && (
+                                          <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3 ml-2">
+                                            {col.title}
+                                          </h4>
+                                        )}
 
                                       <ul className="space-y-3">
                                         {col.items?.map((item: any) => (
@@ -162,8 +158,8 @@ export function MobileMenuDrawer({ groups }: { groups: any[] }) {
                                                 item.type === "COLLECTION"
                                                   ? `/collections/${item.slug}`
                                                   : item.type === "PRODUCT"
-                                                  ? `/product/${item.slug}`
-                                                  : `/${item.slug}`
+                                                    ? `/product/${item.slug}`
+                                                    : `/${item.slug}`
                                               }
                                               className="text-[14px] font-semibold text-gray-600 hover:text-[#217A6E] flex items-center gap-3 py-1"
                                             >
@@ -187,7 +183,6 @@ export function MobileMenuDrawer({ groups }: { groups: any[] }) {
               </ul>
             </div>
 
-            {/* Sticky Action Footer */}
             <div className="p-5 border-t border-gray-100 bg-gray-50/50 space-y-3 shrink-0 pb-safe">
               <a
                 href={`tel:${BRAND.phone}`}
