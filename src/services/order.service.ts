@@ -13,16 +13,16 @@ export interface ReturnRequest {
 }
 
 export interface RefundStatusResponse {
-  orderStatus: string;
-  orderTotal: number;
   hasRefund: boolean;
   refundStatus: string;
-  refundAmount: number | null;
+  refundAmount: number;
   refundProcessedAt: string | null;
   cancellationReason: string | null;
   cancelledAt: string | null;
   cancelledBy: string | null;
   cancellationSource: string | null;
+  orderStatus: string;
+  orderTotal: number;
   refundDetails: {
     refundId: string;
     amount: number;
@@ -36,8 +36,16 @@ export interface RefundStatusResponse {
     amountDisplay: string;
   } | null;
   messages: string[];
+  timeline?: {
+    label: string;
+    completed: boolean;
+    date?: string;
+  }[];
+  hasReturn?: boolean;
+  returnStatus?: string | null;
+  returnStatusDisplay?: string | null;
+  returnNumber?: string | null;
 }
-
 
 
 
@@ -68,17 +76,22 @@ export const orderService = {
   },
 
    // Cancel order
-  cancelOrder: (id: string, data: CancelOrderRequest) => 
-    apiClient.post(`/orders/${id}/cancel`, data),
-  
+   cancelOrder: async (orderId: string, data: { reason: string; notes?: string }) => {
+    const response = await apiClient.post(`/orders/${orderId}/cancel`, data);
+    return response.data;
+  },
   // Request return
-  requestReturn: (id: string, data: ReturnRequest) => 
-    apiClient.post(`/orders/${id}/return-request`, data),
-  
+    requestReturn: async (orderId: string, data: { reason: string; comments?: string }) => {
+    const response = await apiClient.post(`/orders/${orderId}/return-request`, data);
+    return response.data;
+  },
+
   // Get refund status
-  getRefundStatus: (id: string) => 
-    apiClient.get(`/orders/${id}/refund-status`),
-  
+   getRefundStatus: async (orderId: string): Promise<RefundStatusResponse> => {
+    const response = await apiClient.get(`/orders/${orderId}/refund-status`);
+    return response.data;
+  },
+
   // Check cancellation eligibility
   checkCancellationEligibility: (id: string) => 
     apiClient.get(`/orders/${id}/cancellation-eligibility`),

@@ -34,6 +34,65 @@ export function isOrderTerminal(status: string): boolean {
   return ['CANCELLED', 'RETURNED'].includes(status);
 }
 
+// Return status mapping for display
+export const RETURN_STATUS_MAP: Record<string, {
+  label: string;
+  color: string;
+  bgColor: string;
+  borderColor: string;
+  icon?: string;
+}> = {
+  'REQUESTED': {
+    label: 'Return Requested',
+    color: 'text-yellow-700',
+    bgColor: 'bg-yellow-50',
+    borderColor: 'border-yellow-200',
+  },
+  'APPROVED': {
+    label: 'Return Approved',
+    color: 'text-blue-700',
+    bgColor: 'bg-blue-50',
+    borderColor: 'border-blue-200',
+  },
+  'REJECTED': {
+    label: 'Return Rejected',
+    color: 'text-red-700',
+    bgColor: 'bg-red-50',
+    borderColor: 'border-red-200',
+  },
+  'PICKUP_SCHEDULED': {
+    label: 'Pickup Scheduled',
+    color: 'text-indigo-700',
+    bgColor: 'bg-indigo-50',
+    borderColor: 'border-indigo-200',
+  },
+  'PICKUP_COMPLETED': {
+    label: 'Pickup Completed',
+    color: 'text-purple-700',
+    bgColor: 'bg-purple-50',
+    borderColor: 'border-purple-200',
+  },
+  'RECEIVED': {
+    label: 'Return Received',
+    color: 'text-teal-700',
+    bgColor: 'bg-teal-50',
+    borderColor: 'border-teal-200',
+  },
+  'INSPECTED': {
+    label: 'Return Inspected',
+    color: 'text-cyan-700',
+    bgColor: 'bg-cyan-50',
+    borderColor: 'border-cyan-200',
+  },
+  'CLOSED': {
+    label: 'Return Closed',
+    color: 'text-green-700',
+    bgColor: 'bg-green-50',
+    borderColor: 'border-green-200',
+  },
+};
+
+// Order status mapping
 export function getStatusDisplayInfo(status: string): {
   label: string;
   color: string;
@@ -78,15 +137,32 @@ export function getStatusDisplayInfo(status: string): {
       borderColor: 'border-red-200',
     },
     RETURNED: {
-      label: 'Returned',
-      color: 'text-rose-700',
-      bgColor: 'bg-rose-50',
-      borderColor: 'border-rose-200',
+      label: 'Return in Progress',
+      color: 'text-blue-700',
+      bgColor: 'bg-blue-50',
+      borderColor: 'border-blue-200',
     },
   };
 
   return statusMap[status] || {
     label: status,
+    color: 'text-gray-700',
+    bgColor: 'bg-gray-50',
+    borderColor: 'border-gray-200',
+  };
+}
+
+/**
+ * Get return status display info
+ */
+export function getReturnStatusInfo(status: string): {
+  label: string;
+  color: string;
+  bgColor: string;
+  borderColor: string;
+} {
+  return RETURN_STATUS_MAP[status] || {
+    label: status || 'Return in Progress',
     color: 'text-gray-700',
     bgColor: 'bg-gray-50',
     borderColor: 'border-gray-200',

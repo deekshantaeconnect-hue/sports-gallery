@@ -1,4 +1,4 @@
-// app/account/orders/[id]/page.tsx (Updated)
+// app/account/orders/[id]/page.tsx
 'use client';
 
 import { use, useState, useEffect } from 'react';
@@ -19,7 +19,12 @@ import { resolveFirstProductImage } from '@/utils/media-normalization';
 import { CancelOrderModal } from '@/components/orders/CancelOrderModal';
 import { ReturnRequestModal } from '@/components/orders/ReturnRequestModal';
 import { RefundStatusCard } from '@/components/orders/RefundStatusCard';
-import { getOrderAction, getStatusDisplayInfo } from '@/utils/order-actions';
+import { 
+  getOrderAction, 
+  getStatusDisplayInfo,
+  getReturnStatusInfo,
+  
+} from '@/utils/order-actions';
 import { toast } from 'sonner';
 
 const fetcher = async (url: string) => {
@@ -65,7 +70,10 @@ export default function UserOrderDetailsPage({
     if (order) {
       console.log('[DEBUG] User Order Data Fetched:', order);
     }
-  }, [order]);
+    if (refundData) {
+      console.log('[DEBUG] Refund Data:', refundData);
+    }
+  }, [order, refundData]);
 
   if (error) {
     return (
@@ -101,8 +109,65 @@ export default function UserOrderDetailsPage({
   }
 
   const currentStatus = order?.status ? String(order.status).toUpperCase() : 'PENDING';
-  const statusInfo = getStatusDisplayInfo(currentStatus);
   const orderAction = getOrderAction(currentStatus);
+
+  // ✅ Determine the correct status to display
+  let statusDisplay = getStatusDisplayInfo(currentStatus);
+
+  // Get return and refund status from refundData
+  const returnStatus = refundData?.returnStatus;
+  const refundStatus = refundData?.refundStatus;
+  const hasRefund = refundData?.hasRefund;
+  const isRefundCompleted = refundStatus === 'COMPLETED' || refundStatus === 'PROCESSED';
+  const isReturnClosed = returnStatus === 'CLOSED';
+
+  // ✅ Priority 1: If refund is completed, show "Refund Completed"
+  if (hasRefund && isRefundCompleted) {
+    statusDisplay = {
+      label: 'Refund Completed',
+      color: 'text-emerald-700',
+      bgColor: 'bg-emerald-50',
+      borderColor: 'border-emerald-200',
+    };
+  }
+  // ✅ Priority 2: If refund is in progress, show refund status
+  else if (hasRefund && refundStatus && refundStatus !== 'NOT_APPLICABLE') {
+    const refundStatusMap: Record<string, { label: string; color: string; bgColor: string; borderColor: string }> = {
+      'NOT_STARTED': { label: 'Refund Ready', color: 'text-blue-700', bgColor: 'bg-blue-50', borderColor: 'border-blue-200' },
+      'INITIATED': { label: 'Refund Initiated', color: 'text-indigo-700', bgColor: 'bg-indigo-50', borderColor: 'border-indigo-200' },
+      'PROCESSING': { label: 'Refund Processing', color: 'text-yellow-700', bgColor: 'bg-yellow-50', borderColor: 'border-yellow-200' },
+      'PENDING': { label: 'Refund Pending', color: 'text-amber-700', bgColor: 'bg-amber-50', borderColor: 'border-amber-200' },
+      'APPROVED': { label: 'Refund Approved', color: 'text-blue-700', bgColor: 'bg-blue-50', borderColor: 'border-blue-200' },
+      'FAILED': { label: 'Refund Failed', color: 'text-red-700', bgColor: 'bg-red-50', borderColor: 'border-red-200' },
+      'CANCELLED': { label: 'Refund Cancelled', color: 'text-gray-700', bgColor: 'bg-gray-50', borderColor: 'border-gray-200' },
+    };
+    
+    if (refundStatusMap[refundStatus]) {
+      statusDisplay = refundStatusMap[refundStatus];
+    }
+  }
+  // ✅ Priority 3: If return is closed but no refund started, show "Return Closed"
+  else if (currentStatus === 'RETURNED' && isReturnClosed) {
+    statusDisplay = {
+      label: 'Return Closed',
+      color: 'text-green-700',
+      bgColor: 'bg-green-50',
+      borderColor: 'border-green-200',
+    };
+  }
+  // ✅ Priority 4: If order is RETURNED with specific return status
+  else if (currentStatus === 'RETURNED' && returnStatus) {
+    statusDisplay = getReturnStatusInfo(returnStatus);
+  }
+  // ✅ Priority 5: If order is RETURNED but no specific status
+  else if (currentStatus === 'RETURNED') {
+    statusDisplay = {
+      label: 'Return in Progress',
+      color: 'text-blue-700',
+      bgColor: 'bg-blue-50',
+      borderColor: 'border-blue-200',
+    };
+  }
 
   const hasAddress = order.addressSnapshot && order.addressSnapshot.name;
   const formattedDate = order.createdAt
@@ -119,12 +184,12 @@ export default function UserOrderDetailsPage({
     try {
       const response = await orderService.cancelOrder(order.id, data);
       toast.success('Order cancelled successfully');
+      setIsCancelModalOpen(false);
 
-     
       await Promise.all([mutateOrder(), mutateRefund()]);
-    } catch (error: any) {
-      toast.error('Cancellation Failed',error.response?.data?.message || 'Failed to cancel order. Please try again.');
 
+    } catch (error: any) {
+      toast.error('Cancellation Failed', error.response?.data?.message || 'Failed to cancel order. Please try again.');
       throw error;
     } finally {
       setIsActionLoading(false);
@@ -136,11 +201,12 @@ export default function UserOrderDetailsPage({
     try {
       const response = await orderService.requestReturn(order.id, data);
       toast.success('Return Request Submitted');
+      setIsReturnModalOpen(false);
 
       await Promise.all([mutateOrder(), mutateRefund()]);
+
     } catch (error: any) {
-      toast.error('Return Request Failed')
-   
+      toast.error('Return Request Failed');
       throw error;
     } finally {
       setIsActionLoading(false);
@@ -174,10 +240,11 @@ export default function UserOrderDetailsPage({
         </div>
 
         <div className="flex items-center gap-3 flex-wrap">
+          {/* ✅ Status Badge - Shows correct status based on refund/return state */}
           <span
-            className={`px-4 py-1.5 text-sm font-bold border rounded-full ${statusInfo.bgColor} ${statusInfo.borderColor} ${statusInfo.color}`}
+            className={`px-4 py-1.5 text-sm font-bold border rounded-full ${statusDisplay.bgColor} ${statusDisplay.borderColor} ${statusDisplay.color}`}
           >
-            {statusInfo.label}
+            {statusDisplay.label}
           </span>
 
           {/* Action Buttons */}
