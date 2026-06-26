@@ -13,6 +13,8 @@ import { HomeBlogSection } from "./HomeBlogSection";
 import { CollectionsShowcase } from "./CollectionsShowcase";
 import { VideoShoppableSection } from "./VideoShoppableSection";
 import WhatsappWidget from "./WhatsappWidget";
+import { CategoryIconStrip } from "./CategoryIconStrip";
+
 
 // 1. REGISTRY: Maps Admin block types to your actual React components
 const SECTION_COMPONENTS: Record<string, React.FC<any>> = {
@@ -26,6 +28,8 @@ const SECTION_COMPONENTS: Record<string, React.FC<any>> = {
   BLOG_SECTION: HomeBlogSection,
   VIDEO_SHOPPABLE: VideoShoppableSection,
   WHATSAPP_WIDGET: WhatsappWidget,
+   CATEGORY_ICON_STRIP: CategoryIconStrip,
+  
 };
 
 interface HomeRendererProps {
@@ -128,7 +132,13 @@ function resolveData(section: any, data: any) {
     case "BRAND_STORY":
       // These elements rely strictly on configured block settings context fields rather than datasets
       return data || [];
-
+ // ✅ NEW: Handle CATEGORY_ICON_STRIP
+    case "CATEGORY_ICON_STRIP":
+      // Pass the entire data object including categories
+      return {
+        categories: data?.categories || [],
+        ...data,
+      };
     default:
       return [];
   }
