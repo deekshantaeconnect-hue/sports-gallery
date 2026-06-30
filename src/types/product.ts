@@ -16,13 +16,6 @@ export interface HomepageConfig {
   }>;
 }
 
-export interface ProductVariant {
-  id: string;
-  name: string;
-   price: number;
-  oldPrice: number;
-  stock: number;
-}
 
 
 export interface ProductExtra {
@@ -34,20 +27,74 @@ export interface ProductExtra {
   aPlusContent?: APlusBlock[];
 }
 
+
+
+
+// src/types/product.ts
+
+
+
+
+export interface SelectedVariant {
+  variant: ProductVariant;
+  quantity: number;
+}
+
+
+// src/types/product.ts (ADD THIS TYPE)
+export interface ProductVariant {
+  id: string;
+  productId: string;
+  storeId: string;
+  sku: string;
+  name: string;
+  optionType?: string;
+  optionValue?: string;
+  price: number;
+  oldPrice?: number;
+  stock: number;
+  shippingWeightKg?: number;
+  lengthCm?: number;
+  widthCm?: number;
+  heightCm?: number;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// This is the full Product type from your schema
 export interface Product {
   id: string;
+  storeId: string;
   name: string;
+  subtitle?: string;
   slug: string;
-  description: string;
- 
-  rating: number;
-  reviewCount: number;
+  description?: string;
   images: string[];
-  category: string;
-  attributes: Record<string, string>;
-  // variants: Array<{ id: string; name: string; value: string }>;
+  isCodEnabled: boolean;
+  ingredients?: string;
   careInstructions: string[];
   deliveryInfo: string[];
-  extra: ProductExtra;
+  categoryId?: string;
+  rating: number;
+  reviewCount: number;
+  isActive: boolean;
+  isFeatured: boolean;
   variants: ProductVariant[];
+  highlights: any[];
+  attributes: any[];
+  seoTitle?: string;
+  seoDescription?: string;
+}
+
+// NEW: Type for modal product (subset of Product)
+export interface ModalProduct {
+  id: string;
+  name: string;
+  subtitle?: string;
+  images: string[];
+  rating?: number;
+  reviewCount?: number;
+  isCodEnabled: boolean;
+  variants?: ProductVariant[];
 }
