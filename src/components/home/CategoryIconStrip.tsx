@@ -17,6 +17,7 @@ import { ChevronRight, ChevronLeft, ImageOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { migrateCategoryIconStripSettings } from "@/lib/validators/storefront";
 
+
 // ============================================================
 // 1. TYPES
 // ============================================================
@@ -1014,7 +1015,6 @@ export function CategoryIconStrip({
   className,
 }: CategoryIconStripProps) {
   const pathname = usePathname?.() || "";
-
   // Normalize settings
   const settings = useMemo(() => {
     const migrated = migrateCategoryIconStripSettings(rawSettings) as any;
