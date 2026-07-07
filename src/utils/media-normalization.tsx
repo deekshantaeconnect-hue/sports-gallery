@@ -127,51 +127,51 @@ export function normalizeAPlusContent(content: any[] | null | undefined): any[] 
  * * @param imagesArray - The full array from p.images (could contain stringified JSON or plain strings)
  * @returns A guaranteed static image string URL, or null if empty/invalid
  */
-export function resolveFirstProductImage(imagesArray: any[] | null | undefined): string | null {
-  if (!imagesArray || !Array.isArray(imagesArray) || imagesArray.length === 0) {
-    return null;
-  }
+// export function resolveFirstProductImage(imagesArray: any[] | null | undefined): string | null {
+//   if (!imagesArray || !Array.isArray(imagesArray) || imagesArray.length === 0) {
+//     return null;
+//   }
 
-  // Iterate over the array to find the first valid non-empty asset reference
-  for (const item of imagesArray) {
-    if (!item) continue;
+//   // Iterate over the array to find the first valid non-empty asset reference
+//   for (const item of imagesArray) {
+//     if (!item) continue;
 
-    try {
-      let rawUrl: string | null = null;
+//     try {
+//       let rawUrl: string | null = null;
 
-      // 1. Handle stringified JSON layout or legacy flat strings
-      if (typeof item === "string") {
-        if (item.startsWith("{")) {
-          const parsed = JSON.parse(item);
-          rawUrl = parsed?.url || null;
-        } else {
-          rawUrl = item; // Legacy flat string URL
-        }
-      } 
-      // 2. Handle standard parsed object layers
-      else if (typeof item === "object" && item !== null) {
-        rawUrl = (item as any).url || null;
-      }
+//       // 1. Handle stringified JSON layout or legacy flat strings
+//       if (typeof item === "string") {
+//         if (item.startsWith("{")) {
+//           const parsed = JSON.parse(item);
+//           rawUrl = parsed?.url || null;
+//         } else {
+//           rawUrl = item; // Legacy flat string URL
+//         }
+//       } 
+//       // 2. Handle standard parsed object layers
+//       else if (typeof item === "object" && item !== null) {
+//         rawUrl = (item as any).url || null;
+//       }
 
-      // If we found a valid URL, process it and return it immediately
-      if (rawUrl) {
-        const lowercaseUrl = rawUrl.toLowerCase();
+//       // If we found a valid URL, process it and return it immediately
+//       if (rawUrl) {
+//         const lowercaseUrl = rawUrl.toLowerCase();
         
-        // If it's a video format, convert the extension to .jpg for a Cloudinary fallback frame
-        if (lowercaseUrl.match(/\.(mp4|webm|ogg|mov|mkv)$/)) {
-          return rawUrl.replace(/\.[^/.]+$/, ".jpg");
-        }
+//         // If it's a video format, convert the extension to .jpg for a Cloudinary fallback frame
+//         if (lowercaseUrl.match(/\.(mp4|webm|ogg|mov|mkv)$/)) {
+//           return rawUrl.replace(/\.[^/.]+$/, ".jpg");
+//         }
 
-        return rawUrl;
-      }
-    } catch (error) {
-      console.error("Error processing item in images array:", error);
-      // Continue loop to check subsequent images if one fails parsing
-    }
-  }
+//         return rawUrl;
+//       }
+//     } catch (error) {
+//       console.error("Error processing item in images array:", error);
+//       // Continue loop to check subsequent images if one fails parsing
+//     }
+//   }
 
-  return null;
-}
+//   return null;
+// }
 
 
 export function resolveOnlyProductImages(
@@ -280,4 +280,52 @@ export function resolveSingleProductImage(
   } catch {
     return null;
   }
+}
+
+export function resolveFirstProductImage(
+  imagesArray: any[] | null | undefined,
+): string | null {
+  if (!imagesArray || !Array.isArray(imagesArray) || imagesArray.length === 0) {
+    return null;
+  }
+
+  // Iterate over the array to find the first valid non-empty asset reference
+  for (const item of imagesArray) {
+    if (!item) continue;
+
+    try {
+      let rawUrl: string | null = null;
+
+      // 1. Handle stringified JSON layout or legacy flat strings
+      if (typeof item === "string") {
+        if (item.startsWith("{")) {
+          const parsed = JSON.parse(item);
+          rawUrl = parsed?.url || null;
+        } else {
+          rawUrl = item; // Legacy flat string URL
+        }
+      }
+      // 2. Handle standard parsed object layers
+      else if (typeof item === "object" && item !== null) {
+        rawUrl = (item as any).url || null;
+      }
+
+      // If we found a valid URL, process it and return it immediately
+      if (rawUrl) {
+        const lowercaseUrl = rawUrl.toLowerCase();
+
+        // If it's a video format, convert the extension to .jpg for a Cloudinary fallback frame
+        if (lowercaseUrl.match(/\.(mp4|webm|ogg|mov|mkv)$/)) {
+          return rawUrl.replace(/\.[^/.]+$/, ".jpg");
+        }
+
+        return rawUrl;
+      }
+    } catch (error) {
+      console.error("Error processing item in images array:", error);
+      // Continue loop to check subsequent images if one fails parsing
+    }
+  }
+
+  return null;
 }

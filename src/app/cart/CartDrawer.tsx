@@ -12,7 +12,7 @@ import { useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { OtpModal } from "@/components/auth/OtpModal";
 import { useRouter } from "next/navigation";
-import { resolveSingleProductImage } from "@/utils/media-normalization"; // 🔥 IMPORT RESOLVER HELPER
+import { resolveFirstProductImage } from "@/utils/media-normalization"; // 🔥 IMPORT RESOLVER HELPER
 
 export function CartDrawer() {
   const { isCartOpen, closeCart } = useUIStore();
@@ -75,7 +75,9 @@ export function CartDrawer() {
             <div className="space-y-4">
               {items.map((item) => {
    const staticImageUrl =
-    resolveSingleProductImage(item.image) || "/placeholder-product.png";
+    resolveFirstProductImage(
+      Array.isArray(item.image) ? item.image : [item.image],
+    ) || "/placeholder-product.png";
                 return (<div
                   key={`${item.productId}-${item.variantId}`}
                   className="flex gap-4 border-b border-gray-50 pb-4"
