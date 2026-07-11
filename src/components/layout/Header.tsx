@@ -92,6 +92,7 @@ export function Header({ megaMenu }: HeaderProps) {
     <>
       {/* Conditionally apply background, border, and shadow based on isScrolled */}
       <header
+        data-testid="header"
         className={`w-full sticky top-0 z-50 transition-all duration-300 ${
           isScrolled
             ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-200"
@@ -135,20 +136,18 @@ export function Header({ megaMenu }: HeaderProps) {
               onClick={openMobileMenu}
               className="lg:hidden p-2 -ml-2 mr-2 text-gray-900 hover:text-[#217A6E] transition-colors"
               aria-label="Open Mobile Menu"
+              data-testid="mobile-menu-button"
             >
               <Menu size={26} strokeWidth={2.5} />
             </button>
-            
+
             <Link
               href="/"
               className="flex items-center gap-3 group outline-none rounded-xl focus-visible:ring-2 focus-visible:ring-[#217A6E]/40 p-1 -ml-1 transition-all"
               aria-label={`${BRAND.name} Home`}
+              data-testid="home-link"
             >
               {displayStringLogo ? (
-                /* FIX: Replaced raw image with an explicit layout boundary.
-                  This handles 'fill' properties smoothly across devices and satisfies
-                  Next.js' 'sizes' attribute requirements cleanly.
-                */
                 <div className="relative w-[120px] h-[42px] sm:w-[140px] sm:h-[48px] md:w-[150px] md:h-[52px] transition-transform duration-400 ease-out group-hover:scale-[1.04] group-active:scale-95 origin-left">
                   <Image
                     src={cleanLogoUrl}
@@ -187,6 +186,7 @@ export function Header({ megaMenu }: HeaderProps) {
               onClick={openSearch}
               className="text-gray-900 hover:text-[#217A6E] transition-colors p-1 group relative"
               aria-label="Search"
+              data-testid="search-icon"
             >
               <Search
                 size={22}
@@ -205,6 +205,7 @@ export function Header({ megaMenu }: HeaderProps) {
                 }
                 className="text-gray-900 hover:text-[#217A6E] transition-colors p-1 flex items-center gap-1 group"
                 aria-label="Account"
+                data-testid="user-icon"
               >
                 <User
                   size={22}
@@ -222,7 +223,7 @@ export function Header({ megaMenu }: HeaderProps) {
               </button>
 
               {user && isDropdownOpen && (
-                <div className="absolute right-0 mt-4 w-60 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 z-[60] animate-in fade-in slide-in-from-top-2 overflow-hidden">
+                <div className="absolute right-0 mt-4 w-60 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 z-[60] animate-in fade-in slide-in-from-top-2 overflow-hidden" data-testid="user-dropdown">
                   <div className="px-5 py-3 border-b border-gray-50 bg-gray-50/50 mb-1">
                     <p className="text-[10px] text-gray-400 uppercase tracking-widest font-black mb-0.5">
                       Signed In As
@@ -237,6 +238,7 @@ export function Header({ megaMenu }: HeaderProps) {
                       href="/profile"
                       onClick={() => setIsDropdownOpen(false)}
                       className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 rounded-xl hover:bg-[#217A6E]/5 hover:text-[#217A6E] transition-colors"
+                      data-testid="profile-link"
                     >
                       <Settings size={16} /> Profile Settings
                     </Link>
@@ -248,6 +250,7 @@ export function Header({ megaMenu }: HeaderProps) {
                     <button
                       onClick={handleLogout}
                       className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-red-600 rounded-xl hover:bg-red-50 transition-colors"
+                      data-testid="logout-button"
                     >
                       <LogOut size={16} /> Sign Out
                     </button>
@@ -264,6 +267,7 @@ export function Header({ megaMenu }: HeaderProps) {
               }}
               className="text-gray-900 hover:text-[#217A6E] transition-colors p-1 relative group bg-transparent border-none cursor-pointer"
               aria-label="Open Cart"
+              data-testid="cart-icon"
             >
               <ShoppingCart
                 size={22}
@@ -271,7 +275,7 @@ export function Header({ megaMenu }: HeaderProps) {
                 className="group-hover:scale-110 transition-transform"
               />
               {!isLoading && cartCount > 0 && (
-                <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[10px] font-black rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-sm ring-2 ring-white">
+                <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[10px] font-black rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-sm ring-2 ring-white" data-testid="cart-count">
                   {cartCount}
                 </span>
               )}
@@ -292,6 +296,7 @@ export function Header({ megaMenu }: HeaderProps) {
         <Link
           href="/"
           className="flex flex-col items-center justify-center w-full h-full text-[#217A6E] group"
+          data-testid="mobile-home"
         >
           <Home
             size={22}
@@ -303,6 +308,7 @@ export function Header({ megaMenu }: HeaderProps) {
         <a
           href={`tel:${BRAND.phone.replace(/\s+/g, "")}`}
           className="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-gray-900 group"
+          data-testid="mobile-call"
         >
           <Phone
             size={22}
@@ -314,6 +320,7 @@ export function Header({ megaMenu }: HeaderProps) {
         <button
           onClick={openSearch}
           className="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-gray-900 group"
+          data-testid="mobile-search"
         >
           <Search
             size={22}
@@ -327,6 +334,7 @@ export function Header({ megaMenu }: HeaderProps) {
             !user ? setLoginModalOpen(true) : window.location.assign("/profile")
           }
           className="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-gray-900 group"
+          data-testid="mobile-user"
         >
           <User
             size={22}
