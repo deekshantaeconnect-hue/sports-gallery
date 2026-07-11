@@ -449,11 +449,12 @@ console.log("Phone OTP verification successful:", data);
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6" data-testid="otp-modal">
       {/* Overlay */}
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-md"
         onClick={resetModal}
+        data-testid="otp-modal-overlay"
       />
 
       {/* Modal */}
@@ -462,6 +463,7 @@ console.log("Phone OTP verification successful:", data);
         <button
           onClick={resetModal}
           className="absolute right-5 top-5 z-20 rounded-full bg-white/90 p-2 text-gray-500 transition hover:text-black"
+          data-testid="otp-modal-close"
         >
           <X size={18} />
         </button>
@@ -536,7 +538,8 @@ console.log("Phone OTP verification successful:", data);
                 </h3>
 
                 {rateLimitMessage && (
-                  <p className="mt-3 rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+                  <p className="mt-3 rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600"
+                  data-testid="otp-error-message">
                     {rateLimitMessage}
                   </p>
                 )}
@@ -559,6 +562,7 @@ console.log("Phone OTP verification successful:", data);
                       }
                       placeholder="Email or Phone Number"
                       className="h-14 w-full rounded-xl border border-gray-200 px-5 outline-none transition focus:border-[#009688] focus:ring-2 focus:ring-[#009688]/20"
+                      data-testid="otp-identifier-input"
                     />
 
                     <Button
@@ -573,6 +577,7 @@ console.log("Phone OTP verification successful:", data);
                       style={{
                         backgroundColor: BRAND.theme.primary,
                       }}
+                      data-testid="otp-continue-button"
                     >
                       {sendOtpMutation.isPending ? (
                         <Loader2 className="animate-spin" />
@@ -586,8 +591,9 @@ console.log("Phone OTP verification successful:", data);
                 {/* STEP 2 */}
                 {step === 2 && (
                   <>
-                    {renderOtpBoxes("email")}
-
+                    <div data-testid="otp-input-container">
+                      {renderOtpBoxes("email")}
+                    </div>
                     <Button
                       onClick={() =>
                         verifyOtpMutation.mutate()
@@ -600,6 +606,7 @@ console.log("Phone OTP verification successful:", data);
                       style={{
                         backgroundColor: BRAND.theme.primary,
                       }}
+                       data-testid="otp-verify-button"
                     >
                       {verifyOtpMutation.isPending ? (
                         <Loader2 className="animate-spin" />
@@ -609,7 +616,7 @@ console.log("Phone OTP verification successful:", data);
                     </Button>
 
                     {/* RESEND */}
-                    <div className="text-center">
+                    <div className="text-center" data-testid="otp-resend-container">
                       {canResend ? (
                         <button
                           onClick={handleResendOtp}
@@ -617,13 +624,14 @@ console.log("Phone OTP verification successful:", data);
                             sendOtpMutation.isPending
                           }
                           className="text-sm font-bold text-[#009688] hover:underline"
+                          data-testid="otp-resend-button"
                         >
                           Resend OTP
                         </button>
                       ) : (
                         <p className="text-sm text-gray-500">
                           Resend OTP in{" "}
-                          <span className="font-bold">
+                          <span className="font-bold"  data-testid="otp-timer">
                             {resendTimer}s
                           </span>
                         </p>
@@ -638,6 +646,7 @@ console.log("Phone OTP verification successful:", data);
                         );
                       }}
                       className="flex w-full items-center justify-center gap-2 pt-2 text-sm font-semibold text-gray-500"
+                      data-testid="otp-edit-details"
                     >
                       <ArrowLeft size={16} />
                       Edit Details
@@ -675,6 +684,7 @@ console.log("Phone OTP verification successful:", data);
                         }
                         placeholder="Mobile Number"
                         className="h-14 w-full rounded-xl border border-gray-200 pl-16 pr-5 outline-none transition focus:border-[#009688] focus:ring-2 focus:ring-[#009688]/20"
+                        data-testid="otp-phone-input"
                       />
                     </div>
 
@@ -692,6 +702,7 @@ console.log("Phone OTP verification successful:", data);
                       style={{
                         backgroundColor: BRAND.theme.primary,
                       }}
+                      data-testid="otp-send-phone-otp"
                     >
                       {sendPhoneOtpMutation.isPending ? (
                         <Loader2 className="animate-spin" />
@@ -705,7 +716,9 @@ console.log("Phone OTP verification successful:", data);
                 {/* STEP 4 */}
                 {step === 4 && (
                   <>
-                    {renderOtpBoxes("phone")}
+                    <div data-testid="otp-phone-input-container">
+                      {renderOtpBoxes("phone")}
+                    </div>
 
                     <Button
                       onClick={() =>
@@ -720,6 +733,7 @@ console.log("Phone OTP verification successful:", data);
                       style={{
                         backgroundColor: BRAND.theme.primary,
                       }}
+                       data-testid="otp-phone-verify-button"
                     >
                       {verifyPhoneOtpMutation.isPending ? (
                         <Loader2 className="animate-spin" />
@@ -729,7 +743,7 @@ console.log("Phone OTP verification successful:", data);
                     </Button>
 
                     {/* RESEND */}
-                    <div className="text-center">
+                    <div className="text-center" data-testid="otp-phone-resend-container">
                       {canResend ? (
                         <button
                           onClick={handleResendOtp}
@@ -737,13 +751,14 @@ console.log("Phone OTP verification successful:", data);
                             sendPhoneOtpMutation.isPending
                           }
                           className="text-sm font-bold text-[#009688] hover:underline"
+                          data-testid="otp-phone-resend-button"
                         >
                           Resend OTP
                         </button>
                       ) : (
                         <p className="text-sm text-gray-500">
                           Resend OTP in{" "}
-                          <span className="font-bold">
+                          <span className="font-bold" data-testid="otp-phone-timer">
                             {resendTimer}s
                           </span>
                         </p>
@@ -759,6 +774,7 @@ console.log("Phone OTP verification successful:", data);
                         );
                       }}
                       className="flex w-full items-center justify-center gap-2 pt-2 text-sm font-semibold text-gray-500"
+                      data-testid="otp-edit-phone"
                     >
                       <ArrowLeft size={16} />
                       Edit Mobile Number
