@@ -976,6 +976,11 @@ export default function CheckoutClient() {
                         ? `₹${codExtraCharge} COD handling charge applied`
                         : "Extra charges may apply"}
                     </p>
+                    <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
+    <p className="text-xs text-amber-700">
+      📞 Our team will call you shortly to verify your order before dispatch.
+    </p>
+  </div>
                   </div>
                 </div>
               </label>
