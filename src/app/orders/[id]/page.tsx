@@ -1,10 +1,10 @@
 // app/account/orders/[id]/page.tsx
-'use client';
+"use client";
 
-import { use, useState, useEffect } from 'react';
-import useSWR from 'swr';
-import { apiClient } from '@/lib/api-client';
-import { orderService } from '@/services/order.service';
+import { use, useState, useEffect } from "react";
+import useSWR from "swr";
+import { apiClient } from "@/lib/api-client";
+import { orderService } from "@/services/order.service";
 import {
   Package,
   XCircle,
@@ -14,18 +14,17 @@ import {
   CreditCard,
   Truck,
   AlertCircle,
-} from 'lucide-react';
-import { resolveFirstProductImage } from '@/utils/media-normalization';
-import { CancelOrderModal } from '@/components/orders/CancelOrderModal';
-import { ReturnRequestModal } from '@/components/orders/ReturnRequestModal';
-import { RefundStatusCard } from '@/components/orders/RefundStatusCard';
-import { 
-  getOrderAction, 
+} from "lucide-react";
+import { resolveFirstProductImage } from "@/utils/media-normalization";
+import { CancelOrderModal } from "@/components/orders/CancelOrderModal";
+import { ReturnRequestModal } from "@/components/orders/ReturnRequestModal";
+import { RefundStatusCard } from "@/components/orders/RefundStatusCard";
+import {
+  getOrderAction,
   getStatusDisplayInfo,
   getReturnStatusInfo,
-  
-} from '@/utils/order-actions';
-import { toast } from 'sonner';
+} from "@/utils/order-actions";
+import { toast } from "sonner";
 
 const fetcher = async (url: string) => {
   try {
@@ -49,29 +48,26 @@ export default function UserOrderDetailsPage({
   const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
   const [isActionLoading, setIsActionLoading] = useState(false);
 
-  const { 
-    data: order, 
-    error, 
+  const {
+    data: order,
+    error,
     isLoading,
-    mutate: mutateOrder 
+    mutate: mutateOrder,
   } = useSWR(orderId ? `/orders/${orderId}/summary` : null, fetcher);
 
-  const { 
+  const {
     data: refundData,
     error: refundError,
     isLoading: refundLoading,
-    mutate: mutateRefund
-  } = useSWR(
-    orderId ? `/orders/${orderId}/refund-status` : null,
-    fetcher
-  );
+    mutate: mutateRefund,
+  } = useSWR(orderId ? `/orders/${orderId}/refund-status` : null, fetcher);
 
   useEffect(() => {
     if (order) {
-      console.log('[DEBUG] User Order Data Fetched:', order);
+      console.log("[DEBUG] User Order Data Fetched:", order);
     }
     if (refundData) {
-      console.log('[DEBUG] Refund Data:', refundData);
+      console.log("[DEBUG] Refund Data:", refundData);
     }
   }, [order, refundData]);
 
@@ -79,7 +75,9 @@ export default function UserOrderDetailsPage({
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-4">
         <XCircle className="h-12 w-12 text-red-500" />
-        <h2 className="text-xl font-bold text-gray-900">Failed to load order</h2>
+        <h2 className="text-xl font-bold text-gray-900">
+          Failed to load order
+        </h2>
         <p className="text-sm text-gray-500">
           Please check your network connection or try again later.
         </p>
@@ -108,7 +106,9 @@ export default function UserOrderDetailsPage({
     );
   }
 
-  const currentStatus = order?.status ? String(order.status).toUpperCase() : 'PENDING';
+  const currentStatus = order?.status
+    ? String(order.status).toUpperCase()
+    : "PENDING";
   const orderAction = getOrderAction(currentStatus);
 
   // ✅ Determine the correct status to display
@@ -118,60 +118,101 @@ export default function UserOrderDetailsPage({
   const returnStatus = refundData?.returnStatus;
   const refundStatus = refundData?.refundStatus;
   const hasRefund = refundData?.hasRefund;
-  const isRefundCompleted = refundStatus === 'COMPLETED' || refundStatus === 'PROCESSED';
-  const isReturnClosed = returnStatus === 'CLOSED';
+  const isRefundCompleted =
+    refundStatus === "COMPLETED" || refundStatus === "PROCESSED";
+  const isReturnClosed = returnStatus === "CLOSED";
 
   // ✅ Priority 1: If refund is completed, show "Refund Completed"
   if (hasRefund && isRefundCompleted) {
     statusDisplay = {
-      label: 'Refund Completed',
-      color: 'text-emerald-700',
-      bgColor: 'bg-emerald-50',
-      borderColor: 'border-emerald-200',
+      label: "Refund Completed",
+      color: "text-emerald-700",
+      bgColor: "bg-emerald-50",
+      borderColor: "border-emerald-200",
     };
   }
   // ✅ Priority 2: If refund is in progress, show refund status
-  else if (hasRefund && refundStatus && refundStatus !== 'NOT_APPLICABLE') {
-    const refundStatusMap: Record<string, { label: string; color: string; bgColor: string; borderColor: string }> = {
-      'NOT_STARTED': { label: 'Refund Ready', color: 'text-blue-700', bgColor: 'bg-blue-50', borderColor: 'border-blue-200' },
-      'INITIATED': { label: 'Refund Initiated', color: 'text-indigo-700', bgColor: 'bg-indigo-50', borderColor: 'border-indigo-200' },
-      'PROCESSING': { label: 'Refund Processing', color: 'text-yellow-700', bgColor: 'bg-yellow-50', borderColor: 'border-yellow-200' },
-      'PENDING': { label: 'Refund Pending', color: 'text-amber-700', bgColor: 'bg-amber-50', borderColor: 'border-amber-200' },
-      'APPROVED': { label: 'Refund Approved', color: 'text-blue-700', bgColor: 'bg-blue-50', borderColor: 'border-blue-200' },
-      'FAILED': { label: 'Refund Failed', color: 'text-red-700', bgColor: 'bg-red-50', borderColor: 'border-red-200' },
-      'CANCELLED': { label: 'Refund Cancelled', color: 'text-gray-700', bgColor: 'bg-gray-50', borderColor: 'border-gray-200' },
+  else if (hasRefund && refundStatus && refundStatus !== "NOT_APPLICABLE") {
+    const refundStatusMap: Record<
+      string,
+      { label: string; color: string; bgColor: string; borderColor: string }
+    > = {
+      NOT_STARTED: {
+        label: "Refund Ready",
+        color: "text-blue-700",
+        bgColor: "bg-blue-50",
+        borderColor: "border-blue-200",
+      },
+      INITIATED: {
+        label: "Refund Initiated",
+        color: "text-indigo-700",
+        bgColor: "bg-indigo-50",
+        borderColor: "border-indigo-200",
+      },
+      PROCESSING: {
+        label: "Refund Processing",
+        color: "text-yellow-700",
+        bgColor: "bg-yellow-50",
+        borderColor: "border-yellow-200",
+      },
+      PENDING: {
+        label: "Refund Pending",
+        color: "text-amber-700",
+        bgColor: "bg-amber-50",
+        borderColor: "border-amber-200",
+      },
+      APPROVED: {
+        label: "Refund Approved",
+        color: "text-blue-700",
+        bgColor: "bg-blue-50",
+        borderColor: "border-blue-200",
+      },
+      FAILED: {
+        label: "Refund Failed",
+        color: "text-red-700",
+        bgColor: "bg-red-50",
+        borderColor: "border-red-200",
+      },
+      CANCELLED: {
+        label: "Refund Cancelled",
+        color: "text-gray-700",
+        bgColor: "bg-gray-50",
+        borderColor: "border-gray-200",
+      },
     };
-    
+
     if (refundStatusMap[refundStatus]) {
       statusDisplay = refundStatusMap[refundStatus];
     }
   }
   // ✅ Priority 3: If return is closed but no refund started, show "Return Closed"
-  else if (currentStatus === 'RETURNED' && isReturnClosed) {
+  else if (currentStatus === "RETURNED" && isReturnClosed) {
     statusDisplay = {
-      label: 'Return Closed',
-      color: 'text-green-700',
-      bgColor: 'bg-green-50',
-      borderColor: 'border-green-200',
+      label: "Return Closed",
+      color: "text-green-700",
+      bgColor: "bg-green-50",
+      borderColor: "border-green-200",
     };
   }
   // ✅ Priority 4: If order is RETURNED with specific return status
-  else if (currentStatus === 'RETURNED' && returnStatus) {
+  else if (currentStatus === "RETURNED" && returnStatus) {
     statusDisplay = getReturnStatusInfo(returnStatus);
   }
   // ✅ Priority 5: If order is RETURNED but no specific status
-  else if (currentStatus === 'RETURNED') {
+  else if (currentStatus === "RETURNED") {
     statusDisplay = {
-      label: 'Return in Progress',
-      color: 'text-blue-700',
-      bgColor: 'bg-blue-50',
-      borderColor: 'border-blue-200',
+      label: "Return in Progress",
+      color: "text-blue-700",
+      bgColor: "bg-blue-50",
+      borderColor: "border-blue-200",
     };
   }
 
   const hasAddress = order.addressSnapshot && order.addressSnapshot.name;
   const formattedDate = order.createdAt
-    ? new Date(order.createdAt).toLocaleDateString('en-IN', { dateStyle: 'long' })
+    ? new Date(order.createdAt).toLocaleDateString("en-IN", {
+        dateStyle: "long",
+      })
     : null;
 
   const totalAmount = Number(order.totalAmount) || 0;
@@ -179,34 +220,42 @@ export default function UserOrderDetailsPage({
   const subtotal = Math.max(0, totalAmount - shippingCost);
 
   // Action handlers
-  const handleCancelOrder = async (data: { reason: string; notes?: string }) => {
+  const handleCancelOrder = async (data: {
+    reason: string;
+    notes?: string;
+  }) => {
     setIsActionLoading(true);
     try {
       const response = await orderService.cancelOrder(order.id, data);
-      toast.success('Order cancelled successfully');
+      toast.success("Order cancelled successfully");
       setIsCancelModalOpen(false);
 
       await Promise.all([mutateOrder(), mutateRefund()]);
-
     } catch (error: any) {
-      toast.error('Cancellation Failed', error.response?.data?.message || 'Failed to cancel order. Please try again.');
+      toast.error(
+        "Cancellation Failed",
+        error.response?.data?.message ||
+          "Failed to cancel order. Please try again.",
+      );
       throw error;
     } finally {
       setIsActionLoading(false);
     }
   };
 
-  const handleReturnRequest = async (data: { reason: string; comments?: string }) => {
+  const handleReturnRequest = async (data: {
+    reason: string;
+    comments?: string;
+  }) => {
     setIsActionLoading(true);
     try {
       const response = await orderService.requestReturn(order.id, data);
-      toast.success('Return Request Submitted');
+      toast.success("Return Request Submitted");
       setIsReturnModalOpen(false);
 
       await Promise.all([mutateOrder(), mutateRefund()]);
-
     } catch (error: any) {
-      toast.error('Return Request Failed');
+      toast.error("Return Request Failed");
       throw error;
     } finally {
       setIsActionLoading(false);
@@ -223,7 +272,7 @@ export default function UserOrderDetailsPage({
           </h1>
           <p className="text-sm text-gray-500 mt-1 flex items-center gap-2">
             <span>
-              ID:{' '}
+              ID:{" "}
               <span className="font-mono text-gray-700 font-semibold">
                 {order.id.toUpperCase()}
               </span>
@@ -248,7 +297,7 @@ export default function UserOrderDetailsPage({
           </span>
 
           {/* Action Buttons */}
-          {orderAction === 'cancel' && (
+          {orderAction === "cancel" && (
             <button
               onClick={() => setIsCancelModalOpen(true)}
               className="px-4 py-1.5 text-sm font-medium text-red-600 border border-red-300 rounded-full hover:bg-red-50 transition-colors"
@@ -258,7 +307,7 @@ export default function UserOrderDetailsPage({
             </button>
           )}
 
-          {orderAction === 'return' && (
+          {orderAction === "return" && (
             <button
               onClick={() => setIsReturnModalOpen(true)}
               className="px-4 py-1.5 text-sm font-medium text-blue-600 border border-blue-300 rounded-full hover:bg-blue-50 transition-colors"
@@ -285,7 +334,8 @@ export default function UserOrderDetailsPage({
                 </p>
                 <p>{order.addressSnapshot?.addressLine}</p>
                 <p>
-                  {order.addressSnapshot?.city}, {order.addressSnapshot?.state} —{' '}
+                  {order.addressSnapshot?.city}, {order.addressSnapshot?.state}{" "}
+                  —{" "}
                   <span className="font-semibold">
                     {order.addressSnapshot?.pincode}
                   </span>
@@ -319,9 +369,9 @@ export default function UserOrderDetailsPage({
           )}
 
           {/* Refund Status Card */}
-          <RefundStatusCard 
-            refundStatus={refundData} 
-            isLoading={refundLoading} 
+          <RefundStatusCard
+            refundStatus={refundData}
+            isLoading={refundLoading}
           />
         </div>
 
@@ -330,7 +380,8 @@ export default function UserOrderDetailsPage({
           <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-xs">
             <div className="p-4 border-b border-gray-100 bg-gray-50/70">
               <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                <Truck className="h-4 w-4 text-gray-400" /> Your Package Elements
+                <Truck className="h-4 w-4 text-gray-400" /> Your Package
+                Elements
               </h3>
             </div>
 
@@ -346,9 +397,9 @@ export default function UserOrderDetailsPage({
                         <img
                           src={
                             resolveFirstProductImage(item?.product?.images) ||
-                            '/placeholder-product.png'
+                            "/placeholder-product.png"
                           }
-                          alt={item.product?.name || 'product'}
+                          alt={item.product?.name || "product"}
                           className="h-full w-full object-contain mix-blend-multiply"
                         />
                       ) : (
@@ -358,11 +409,16 @@ export default function UserOrderDetailsPage({
 
                     <div className="flex-1 min-w-0">
                       <h4 className="font-semibold text-gray-900 text-sm truncate">
-                        {item?.product?.name || 'Product Item'}
+                        {item?.product?.name || "Product Item"}
                       </h4>
+                      {item?.variant?.name && (
+                        <p className="text-xs text-blue-600 font-medium mt-1">
+                          Variant: {item.variant.name}
+                        </p>
+                      )}
                       <p className="text-xs text-gray-500 mt-0.5">
                         Price per unit: ₹
-                        {Number(item?.price || 0).toLocaleString('en-IN')}
+                        {Number(item?.price || 0).toLocaleString("en-IN")}
                       </p>
                     </div>
 
@@ -371,7 +427,7 @@ export default function UserOrderDetailsPage({
                         ₹
                         {(
                           Number(item?.price || 0) * (item?.quantity || 1)
-                        ).toLocaleString('en-IN')}
+                        ).toLocaleString("en-IN")}
                       </p>
                       <p className="text-[11px] font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md inline-block mt-1">
                         Qty: {item?.quantity || 1}
@@ -397,7 +453,7 @@ export default function UserOrderDetailsPage({
               <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>
                 <span className="font-medium text-gray-900">
-                  ₹{subtotal.toLocaleString('en-IN')}
+                  ₹{subtotal.toLocaleString("en-IN")}
                 </span>
               </div>
 
@@ -405,15 +461,15 @@ export default function UserOrderDetailsPage({
                 <span>Delivery Charges</span>
                 <span className="font-medium text-gray-900">
                   {shippingCost > 0
-                    ? `₹${shippingCost.toLocaleString('en-IN')}`
-                    : '₹0 (Free)'}
+                    ? `₹${shippingCost.toLocaleString("en-IN")}`
+                    : "₹0 (Free)"}
                 </span>
               </div>
 
               <div className="pt-3 border-t border-gray-100 flex justify-between items-center">
                 <span className="font-bold text-gray-900">Total Paid</span>
                 <span className="text-xl font-black text-blue-600">
-                  ₹{totalAmount.toLocaleString('en-IN')}
+                  ₹{totalAmount.toLocaleString("en-IN")}
                 </span>
               </div>
             </div>
