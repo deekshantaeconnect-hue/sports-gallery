@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Calendar, ChevronRight, Share2 } from "lucide-react";
+import { BRAND } from "@/config/brand.config";
 
 // 1. Explicitly isolate standalone types to keep the Next.js compiler happy
 type Props = {
@@ -19,7 +20,7 @@ export async function generateMetadata({ params }: Props) {
   if (!blog) return { title: "Article Not Found" };
 
   return {
-    title: `${blog.title} | AE Naturals Journal`,
+    title: `${blog.title} |  ${BRAND.name}`,
     description: blog.excerpt,
     openGraph: { images: [blog.coverImage] },
   };

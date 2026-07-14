@@ -151,7 +151,7 @@ export function Header({ megaMenu }: HeaderProps) {
                 <div className="relative w-[120px] h-[42px] sm:w-[140px] sm:h-[48px] md:w-[150px] md:h-[52px] transition-transform duration-400 ease-out group-hover:scale-[1.04] group-active:scale-95 origin-left">
                   <Image
                     src={cleanLogoUrl}
-                    alt={BRAND.name || "AE Naturals Logo"}
+                    alt={BRAND.name ||  `${BRAND.name} Logo`}
                     fill
                     sizes="(max-width: 640px) 120px, (max-width: 768px) 140px, 150px"
                     style={{ objectFit: "contain" }}

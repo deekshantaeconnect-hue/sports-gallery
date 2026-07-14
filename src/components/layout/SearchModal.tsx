@@ -10,6 +10,7 @@ import { useUIStore } from "@/store/useUIStore";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useProductSearch } from "@/hooks/useProductSearch";
 import { resolveFirstProductImage } from "@/utils/media-normalization";
+import { BRAND } from "@/config/brand.config";
 
 
 export default function SearchModal() {
@@ -187,7 +188,7 @@ export default function SearchModal() {
               Enter
             </kbd>
           </span>
-          <span>Search provided by AE Naturals</span>
+          <span>Search provided by  ${BRAND.name}</span>
         </div>
       </div>
     </div>
