@@ -1,26 +1,27 @@
-// src\config\brand.config.ts
+// src/config/brand.config.ts
 
 export const BRAND = {
-  name: "AE Naturals",
-  useStoreName: "ae-naturals",
-  logo: "https://res.cloudinary.com/djunjtr5l/image/upload/f_auto,q_auto/v1778848925/logo_rogjqa.png", // <-- Add your logo here (emoji or image path)
+  name: "Sports Gallery",
+  useStoreName: "sports-gallery-store",
+  logo:
+    "https://marketplace.canva.com/WpYTg/MAEw4JWpYTg/1/tl/canva-various-sport-equipment-gear-MAEw4JWpYTg.jpg",
+
+  title: "Your Ultimate Sports Destination",
+  description:
+    "Premium sports equipment, apparel, accessories, and fitness essentials for athletes and sports enthusiasts.",
 
   phone: "+91 8553463261",
   whatsapp: "+91 8553463261",
-  email: "care@aenaturals.in",
-
-
-
-
+  email: "care@sportsgallery.in",
 
   address:
-    "39/4, near Global Village front gate, Pattanagere, Rajarajeshwari Nagar, Bengaluru, Karnataka 560059",
+    "39/4, near Global Village Front Gate, Pattanagere, Rajarajeshwari Nagar, Bengaluru, Karnataka 560059",
 
   social: {
-    instagram: "https://www.instagram.com/aenaturalsofficial/reels/",
-    facebook: "https://www.facebook.com/Aenaturalsofficial/",
-    twitter: "https://x.com/aenaturalsoffcl",
-    youtube: "https://www.youtube.com/@aenaturals"
+    instagram: "https://www.instagram.com/sportsgallery",
+    facebook: "https://www.facebook.com/sportsgallery",
+    twitter: "https://x.com/sportsgallery",
+    youtube: "https://www.youtube.com/@sportsgallery",
   },
 
   theme: {
@@ -40,7 +41,6 @@ export const BRAND = {
       muted: "#6B7280",
     },
 
-    // 🔥 ADD THESE (Missing in your system)
     surface: {
       base: "#FFFFFF",
       elevated: "#F8FAFC",
@@ -57,7 +57,6 @@ export const BRAND = {
       hover: "0.08",
       active: "0.16",
       focus: "0.24",
-    }
+    },
   },
-
 };
