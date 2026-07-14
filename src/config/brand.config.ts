@@ -4,7 +4,9 @@ export const BRAND = {
   name: "AE Naturals",
   useStoreName: "ae-naturals",
   logo: "https://res.cloudinary.com/djunjtr5l/image/upload/f_auto,q_auto/v1778848925/logo_rogjqa.png", // <-- Add your logo here (emoji or image path)
-
+ title:"Nature’s Finest Products",
+  description:"Premium natural products crafted for wellness, skincare, haircare, and everyday healthy living.",
+ 
   phone: "+91 8553463261",
   whatsapp: "+91 8553463261",
   email: "care@aenaturals.in",
