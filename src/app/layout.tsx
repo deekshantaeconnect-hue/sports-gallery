@@ -31,9 +31,8 @@ const googleSans = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "AE Naturals | Nature’s Finest Products",
-  description:
-    "Premium natural products crafted for wellness, skincare, haircare, and everyday healthy living.",
+  title: `${BRAND.name} | ${BRAND.title}`,
+  description:`${BRAND.description}`,
 
   icons: {
     icon: [

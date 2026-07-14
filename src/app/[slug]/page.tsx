@@ -4,6 +4,7 @@ import React from "react";
 import { notFound } from "next/navigation";
 import { apiClient } from "@/lib/api-client";
 import { Metadata } from "next";
+import { BRAND } from "@/config/brand.config";
 
 // 1. Define Types
 interface PageSection {
@@ -47,12 +48,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const pageData = await getPageData(slug);
   
   if (!pageData) {
-    return { title: "Page Not Found | AE Naturals" };
+    return { title: `Page Not Found | ${BRAND.name}` };
   }
 
   return {
-    title: `${pageData.title} | AE Naturals`,
-    description: pageData.introText || `Read the ${pageData.title} for AE Naturals.`,
+    title: `${pageData.title} |  ${BRAND.name}`,
+    description: pageData.introText || `Read the ${pageData.title} for  ${BRAND.name}.`,
   };
 }
 
