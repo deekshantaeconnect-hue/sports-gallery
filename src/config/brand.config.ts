@@ -15,7 +15,7 @@ export const BRAND = {
   email: "care@sportsgallery.in",
 
   address:
-    "39/4, near Global Village Front Gate, Pattanagere, Rajarajeshwari Nagar, Bengaluru, Karnataka 560059",
+    "39/4, near Global Village Front Gate, Pattanagere, Rajarajeshwari Nagar, Dehradun, Karnataka 560059",
 
   social: {
     instagram: "https://www.instagram.com/sportsgallery",
@@ -24,33 +24,35 @@ export const BRAND = {
     youtube: "https://www.youtube.com/@sportsgallery",
   },
 
-  theme: {
-    primary: "#217A6E",
-    secondary: "#006044",
-    accent: "#F0FDF4",
 
-    success: "#10B981",
+  theme: {
+    // 🔥 Sports Theme
+    primary: "#0F4C81",     // Deep Athletic Blue
+    secondary: "#FF6B00",   // Energetic Orange
+    accent: "#EAF4FF",      // Light Blue Background
+
+    success: "#22C55E",
     warning: "#F59E0B",
     error: "#EF4444",
     info: "#3B82F6",
 
     neutral: {
-      light: "#F9FAFB",
-      dark: "#0F1715",
-      border: "#E5E7EB",
+      light: "#F8FAFC",
+      dark: "#111827",
+      border: "#D1D5DB",
       muted: "#6B7280",
     },
 
     surface: {
       base: "#FFFFFF",
-      elevated: "#F8FAFC",
-      glass: "rgba(255,255,255,0.7)",
+      elevated: "#F3F7FB",
+      glass: "rgba(255,255,255,0.75)",
     },
 
     darkSurface: {
-      base: "#0F1715",
-      elevated: "#16211E",
-      glass: "rgba(15,23,21,0.7)",
+      base: "#0B1120",
+      elevated: "#172033",
+      glass: "rgba(11,17,32,0.75)",
     },
 
     state: {
