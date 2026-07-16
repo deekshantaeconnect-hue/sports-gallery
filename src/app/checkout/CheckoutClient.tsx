@@ -72,7 +72,7 @@ export default function CheckoutClient() {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const [paymentMethod, setPaymentMethod] = useState<"PREPAID" | "COD">(
-    "PREPAID",
+    "COD",
   );
 
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -927,7 +927,7 @@ export default function CheckoutClient() {
           <h3 className="font-semibold mb-3">Payment Method</h3>
 
           <div className="space-y-3">
-            <label
+            {/* <label
               className={`p-4 rounded-2xl border flex justify-between cursor-pointer ${
                 paymentMethod === "PREPAID"
                   ? "border-[#217A6E] bg-[#217A6E]/5"
@@ -950,7 +950,7 @@ export default function CheckoutClient() {
                   </p>
                 </div>
               </div>
-            </label>
+            </label> */}
 
             {isCodAvailable && (
               <label
@@ -976,6 +976,11 @@ export default function CheckoutClient() {
                         ? `₹${codExtraCharge} COD handling charge applied`
                         : "Extra charges may apply"}
                     </p>
+                    <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
+    <p className="text-xs text-amber-700">
+      📞 Our team will call you shortly to verify your order before dispatch.
+    </p>
+  </div>
                   </div>
                 </div>
               </label>
@@ -986,11 +991,24 @@ export default function CheckoutClient() {
         {/* TOTALS */}
 
         <div className="space-y-3 border-t pt-5">
-          <div className="flex justify-between text-sm text-gray-600">
+          <div className="border-t pt-3 text-sm text-gray-600 space-y-2">
+
+  <div className="flex justify-between">
+    <span>Subtotal (Base)</span>
+    <span>₹{(cartTotal / 1.18).toFixed(2)}</span>
+  </div>
+
+  <div className="flex justify-between">
+    <span>GST (18%)</span>
+    <span>₹{(cartTotal - cartTotal / 1.18).toFixed(2)}</span>
+  </div>
+
+</div>
+          {/* <div className="flex justify-between text-sm text-gray-600">
             <span>Subtotal</span>
 
             <span>₹{cartTotal.toFixed(2)}</span>
-          </div>
+          </div> */}
 
           <div className="flex justify-between text-sm text-gray-600">
             <span>Delivery Charges</span>
