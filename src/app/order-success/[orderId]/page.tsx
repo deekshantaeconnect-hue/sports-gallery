@@ -1,3 +1,6 @@
+// src\app\order-success\[orderId]\page.tsx
+
+
 "use client";
 
 import React, { useEffect, useState, use } from "react";

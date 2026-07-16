@@ -3,9 +3,10 @@
 import { BlogService } from '@/services/blog.service';
 import BlogCard from '@/components/blog/BlogCard';
 import Link from 'next/link';
+import { BRAND } from '@/config/brand.config';
 
 export const metadata = {
-  title: 'Journal & Guides | AE Naturals',
+  title: `Journal & Guides |  ${BRAND.name}`,
   description: 'Discover skincare tips, wellness routines, and the science behind our ingredients.',
 };
 

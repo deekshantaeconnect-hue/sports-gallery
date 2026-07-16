@@ -1,6 +1,7 @@
 // src/app/product/[slug]/ProductDetailsTable.tsx
 import React from 'react';
 import { Store, Tag, Star, Activity } from 'lucide-react';
+import { BRAND } from '@/config/brand.config';
 
 interface ProductDetailsProps {
   productData: any; // The data you provided
@@ -23,7 +24,7 @@ export default function ProductDetailsTable({ productData, extra }: ProductDetai
                 <Store size={14} className="text-[#217A6E]" /> Brand / Store
               </th>
               <td className="px-6 py-4 font-bold text-zinc-900">
-                {productData.store?.name || "AE Naturals Store"}
+                {productData.store?.name ||  BRAND.name}
               </td>
             </tr>
             <tr>

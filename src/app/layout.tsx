@@ -20,9 +20,12 @@ import { BRAND } from "@/config/brand.config";
 
 import { Toaster } from "sonner";
 
+// Import Analytics Provider
+
 // Observability
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { AnalyticsProvider } from "@/components/AnalyticsProvider.tsx";
 
 const googleSans = localFont({
   src: "../fonts/GoogleSansFlex.ttf",
@@ -31,9 +34,8 @@ const googleSans = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "AE Naturals | Nature’s Finest Products",
-  description:
-    "Premium natural products crafted for wellness, skincare, haircare, and everyday healthy living.",
+  title: `${BRAND.name} | ${BRAND.title}`,
+  description:`${BRAND.description}`,
 
   icons: {
     icon: [
@@ -71,6 +73,7 @@ export default function RootLayout({
           ["--accent" as string]: BRAND.theme.accent,
         }}
       >
+        <AnalyticsProvider storeId={BRAND.useStoreName}>
         <ScrollToTopOnRouteChange />
         <QueryProvider>
           <AuthProvider>
@@ -95,6 +98,7 @@ export default function RootLayout({
             </div>
           </AuthProvider>
         </QueryProvider>
+        </AnalyticsProvider>
 
         {/* Vercel Observability */}
         <Analytics />
