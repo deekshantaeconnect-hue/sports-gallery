@@ -48,7 +48,7 @@ export async function Footer() {
         <div className="md:col-span-5 flex flex-col items-start space-y-6">
           {/* Logo */}
           <div className="relative w-[220px] h-[90px]">
-             <Image
+            <Image
               src={BRAND.logo}
               alt={BRAND.name}
               fill
@@ -60,7 +60,11 @@ export async function Footer() {
 
           {/* Tagline */}
           <p className="text-sm opacity-70 max-w-sm leading-relaxed">
-            Natural wellness products crafted for modern lifestyles.
+            {BRAND.description}
+          </p>
+          
+          <p className="text-sm opacity-70 max-w-sm leading-relaxed">
+            {BRAND.address}
           </p>
 
           {/* Contact */}
@@ -168,7 +172,7 @@ export async function Footer() {
       <div className="max-w-7xl mx-auto mt-14 border-t border-gray-700 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
         {/* LEFT */}
         <p className="text-sm opacity-60 text-center md:text-left">
-          © {new Date().getFullYear()} {BRAND.name}. All rights reserved.
+          © {new Date().getFullYear()} {BRAND.fullname}. All rights reserved.
         </p>
 
         {/* RIGHT */}

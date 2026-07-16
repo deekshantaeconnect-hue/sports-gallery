@@ -15,6 +15,7 @@ import { PaymentInitiateResponse } from "@/types/payment";
 import { executePaymentFlow } from "@/lib/payment-handler";
 import Link from "next/link";
 import { load } from "@cashfreepayments/cashfree-js"; // 🔥 Imported Cashfree SDK
+import { removeGST, getGSTAmount } from "@/utils/gst";
 
 interface CourierOption {
   courierPartnerId?: string;
@@ -641,9 +642,16 @@ export default function CartPageClient() {
 
         {/* Totals */}
         <div className="space-y-2">
-          <div className="flex justify-between text-gray-600">
-            <span>Subtotal</span>
-            <span>₹{cartTotal.toFixed(2)}</span>
+          <div className="border-t pt-3 text-sm text-gray-600 space-y-2">
+            <div className="flex justify-between">
+              <span>Subtotal (Base)</span>
+              <span>₹{removeGST(cartTotal).toFixed(2)}</span>
+            </div>
+
+            <div className="flex justify-between">
+              <span>GST (18%)</span>
+              <span>₹{getGSTAmount(cartTotal).toFixed(2)}</span>
+            </div>
           </div>
 
           <div className="flex justify-between items-center text-gray-600">
