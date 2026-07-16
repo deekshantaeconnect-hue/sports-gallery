@@ -9,7 +9,6 @@ import { AddToCartButton } from "./AddToCartButton";
 import StickyAddToCart from "./StickyAddToCart";
 import { analytics } from "@/services/analytics.service";
 
-import { removeGST, getGSTAmount } from "@/utils/gst";
 
 export default function ProductInfo({ product }: { product: any }) {
   const [quantity, setQuantity] = useState(1);
@@ -88,13 +87,6 @@ export default function ProductInfo({ product }: { product: any }) {
       }
     }, [product,activePrice]);
   
-  const activePrice = Number(selectedVariant?.price ?? 0); // GST Included
-  const activeOldPrice = Number(selectedVariant?.oldPrice ?? 0);
-
-  // GST Breakdown
-  const basePrice = removeGST(activePrice);
-const gstAmount = getGSTAmount(activePrice);
-  const oldBasePrice = activeOldPrice ? removeGST(activeOldPrice) : 0;
   const discount =
     activeOldPrice > activePrice
       ? Math.round(((activeOldPrice - activePrice) / activeOldPrice) * 100)
@@ -108,12 +100,12 @@ const gstAmount = getGSTAmount(activePrice);
           {product.name}
         </h1>
 
-        {/* Subtitle */}
-        {product.subtitle && (
-          <p className="mt-2 text-sm md:text-base text-gray-500 font-normal leading-relaxed line-clamp-2 break-words max-w-2xl">
-            {product.subtitle}
-          </p>
-        )}
+    {/* Subtitle */}
+    {product.subtitle && (
+      <p className="mt-2 text-sm md:text-base text-gray-500 font-normal leading-relaxed line-clamp-2 break-words max-w-2xl">
+        {product.subtitle}
+      </p>
+    )}
         <div className="flex items-center space-x-2 mt-2">
           {renderStars(product.rating)}
           <span className="text-sm text-blue-600 hover:underline cursor-pointer font-medium">
@@ -123,38 +115,21 @@ const gstAmount = getGSTAmount(activePrice);
       </div>
 
       {/* Price Block */}
-      <div className="flex flex-col border-y border-gray-100 py-4 space-y-2">
+      <div className="flex flex-col border-y border-gray-100 py-4">
         <div className="flex items-baseline space-x-3">
           <span className="text-3xl font-bold text-gray-900">
-            ₹{basePrice.toLocaleString("en-IN")}
+            ₹{activePrice?.toLocaleString("en-IN") || 0}
           </span>
-
           {discount > 0 && activeOldPrice && (
             <>
               <span className="text-lg text-gray-500 line-through">
-                ₹{activeOldPrice.toLocaleString("en-IN")}
+                ₹{activeOldPrice?.toLocaleString("en-IN")}
               </span>
-
               <span className="text-sm font-semibold text-red-600 bg-red-50 px-2 py-1 rounded">
                 {discount}% OFF
               </span>
             </>
           )}
-        </div>
-
-        
-        <div className="text-sm text-gray-500">
-          GST (18%): ₹{gstAmount.toLocaleString("en-IN")}
-        </div>
-
-
-        <div className="text-sm text-gray-500">
-          Total Price: ₹{activeOldPrice.toLocaleString("en-IN")}
-        </div>
-
-
-        <div className="text-xs text-green-600 font-medium">
-          Inclusive of all taxes
         </div>
       </div>
 
