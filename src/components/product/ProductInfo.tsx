@@ -1,11 +1,14 @@
+// src\components\product\ProductInfo.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ShoppingCart, Zap, Loader2 } from "lucide-react"; // Imported Loader2
 import FeatureHighlights from "@/components/ui/FeatureHighlights";
 import { useCartStore } from "@/store/useCartStore"; // 1. Import Zustand store
 import { AddToCartButton } from "./AddToCartButton";
 import StickyAddToCart from "./StickyAddToCart";
+import { analytics } from "@/services/analytics.service";
+
 
 export default function ProductInfo({ product }: { product: any }) {
   const [quantity, setQuantity] = useState(1);
@@ -38,32 +41,52 @@ export default function ProductInfo({ product }: { product: any }) {
     );
   };
 
-  // 4. Action Handler
-  const handleAddToCart = async () => {
-    if (product.variants?.length > 0 && !selectedVariant) return;
+   
+    // ✅ Track variant selection
+    useEffect(() => {
+      if (selectedVariant && product) {
+        analytics.trackCustomEvent("variant_selected", {
+          product_id: product.id,
+          product_name: product.name,
+          variant_id: selectedVariant.id,
+          variant_name: selectedVariant.name,
+          price: selectedVariant.price,
+          stock: selectedVariant.stock,
+        });
+      }
+    }, [selectedVariant]);
+  
+    // ✅ Track quantity changes
+    useEffect(() => {
+      if (quantity > 0 && product) {
+        analytics.trackCustomEvent("quantity_changed", {
+          product_id: product.id,
+          product_name: product.name,
+          variant_id: selectedVariant?.id,
+          quantity: quantity,
+          price: activePrice,
+        });
+      }
+    }, [quantity]);
+  
 
-    setIsAdding(true);
-    try {
-      await addItem({
-        productId: product.id,
-        variantId: selectedVariant?.id,
-        name: selectedVariant
-          ? `${product.name} - ${selectedVariant.name}`
-          : product.name,
-        price: activePrice, // 🔥 FIX: Passed resolved activePrice instead of undefined product.price
-        image: product.images?.[0] || "",
-        quantity: quantity,
-        isCodEnabled: product.isCodEnabled,
-      });
-    } finally {
-      setIsAdding(false);
-    }
-  };
-
+ 
   // STRICT BACKWARD COMPATIBILITY RULE ON FRONTEND
   const activePrice = selectedVariant?.price ?? 0;
   const activeOldPrice = selectedVariant?.oldPrice ?? 0;
-
+// ✅ Track product view when component mounts
+    useEffect(() => {
+      if (product) {
+        analytics.trackProductView({
+          id: product.id,
+          name: product.name,
+          category: product.category?.name || "Uncategorized",
+          price: activePrice,
+          brand: "Store",
+        });
+      }
+    }, [product,activePrice]);
+  
   const discount =
     activeOldPrice > activePrice
       ? Math.round(((activeOldPrice - activePrice) / activeOldPrice) * 100)
