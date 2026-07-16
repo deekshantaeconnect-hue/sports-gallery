@@ -71,11 +71,11 @@ export default function ProductInfo({ product }: { product: any }) {
     }, [quantity]);
   
 
- 
-  // STRICT BACKWARD COMPATIBILITY RULE ON FRONTEND
-  const activePrice = selectedVariant?.price ?? 0;
-  const activeOldPrice = selectedVariant?.oldPrice ?? 0;
-// ✅ Track product view when component mounts
+ const activePrice = Number(selectedVariant?.price ?? 0); // GST Included
+  const activeOldPrice = Number(selectedVariant?.oldPrice ?? 0);
+
+
+  // ✅ Track product view when component mounts
     useEffect(() => {
       if (product) {
         analytics.trackProductView({
@@ -88,9 +88,7 @@ export default function ProductInfo({ product }: { product: any }) {
       }
     }, [product,activePrice]);
   
-  const activePrice = Number(selectedVariant?.price ?? 0); // GST Included
-  const activeOldPrice = Number(selectedVariant?.oldPrice ?? 0);
-
+  
   // GST Breakdown
   const basePrice = removeGST(activePrice);
 const gstAmount = getGSTAmount(activePrice);
