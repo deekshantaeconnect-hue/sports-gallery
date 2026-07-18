@@ -1,13 +1,14 @@
 // src/types/payment.ts
 
-export type PaymentFlowType = 'REDIRECT' | 'FORM' | 'NONE';
+export type PaymentFlowType = 'REDIRECT' | 'FORM' | 'NONE' | 'RAZORPAY_SDK';
 
 export interface PaymentInitiateResponse {
-  provider: string;           // 'PAYU', 'STRIPE', 'RAZORPAY', 'COD'
-  flow: PaymentFlowType;      // The instruction for the frontend
-  url?: string;               // Target URL for redirect or form POST
-  method?: 'GET' | 'POST';    // Form method
-  params?: Record<string, any>; // The hidden inputs for PayU
+  provider: string;
+  flow?: PaymentFlowType;
+  url?: string;
+  method?: 'GET' | 'POST';
+  params?: Record<string, any>;
   message?: string;
-  formPayload?: any;          // Catch the raw backend payload if needed
+  formPayload?: any;
+  paymentSessionId?: string;
 }
