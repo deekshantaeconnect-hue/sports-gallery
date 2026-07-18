@@ -9,7 +9,7 @@ export const BRAND = {
   title: "Your Ultimate Sports Destination",
   description:
     "Premium sports equipment, apparel, accessories, and fitness essentials for athletes and sports enthusiasts.",
-
+fullname: "Sports Gallery"
   phone: "+91 8553463261",
   whatsapp: "+91 8553463261",
   email: "care@sportsgallery.in",
