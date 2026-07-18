@@ -72,7 +72,7 @@ export default function CheckoutClient() {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const [paymentMethod, setPaymentMethod] = useState<"PREPAID" | "COD">(
-    "COD",
+    "PREPAID",
   );
 
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -230,7 +230,6 @@ export default function CheckoutClient() {
 
       const data: ShippingResponse = response?.data;
 
-      console.log("[SHIPPING RESPONSE]", data);
 
       // =====================================
       // GLOBAL FLAGS
@@ -444,10 +443,12 @@ export default function CheckoutClient() {
       const payRes = await paymentService.initiatePayment(
         session.id || targetOrderId,
       );
+      
 
       const responseData: PaymentInitiateResponse & {
         paymentSessionId?: string;
       } = payRes?.data || payRes;
+
 
       toast.dismiss(toastId);
 
@@ -927,7 +928,7 @@ export default function CheckoutClient() {
           <h3 className="font-semibold mb-3">Payment Method</h3>
 
           <div className="space-y-3">
-            {/* <label
+            <label
               className={`p-4 rounded-2xl border flex justify-between cursor-pointer ${
                 paymentMethod === "PREPAID"
                   ? "border-[#217A6E] bg-[#217A6E]/5"
@@ -950,7 +951,7 @@ export default function CheckoutClient() {
                   </p>
                 </div>
               </div>
-            </label> */}
+            </label>
 
             {isCodAvailable && (
               <label
